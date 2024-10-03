@@ -1,5 +1,5 @@
 ---
-title: "PublicGenoPheno"
+title: "PublicGenoPheno Enterobase E. coli"
 output: html_document
 date: "2024-10-03"
 ---
@@ -12,8 +12,6 @@ knitr::opts_knit$set(root.dir = getwd())
 # Data wrangling
 library(tidyverse)
 library(dplyr)
-library(reshape2)
-library(ComplexUpset)
 library(patchwork)
 
 source("functions.R")
@@ -21,9 +19,11 @@ source("functions.R")
 
 # read AST data - from NCBI
 ```{r }
-# E. coli
+
 ec<-read_delim("Ecoli_AST.tsv.gz") %>% rename(BioSample=`#BioSample`)
+
 length(unique(ec$BioSample))
+
 ec %>% group_by(BioSample) %>% summarise(n=length(unique((Antibiotic))))%>% pull(n) %>% summary()
 
 ```

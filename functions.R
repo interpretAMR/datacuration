@@ -1,5 +1,5 @@
 # inputs
-# ec_amr_meta: binary AMRfinder plus results, with metadata fields:
+# ec_amr_meta: binary AMRfinder plus results from Enterobase, with metadata fields:
 #         - `Clermont Type (ClermonTyping)`
 #         - `Pathovar`
 # marker: name of marker to summarise
@@ -13,9 +13,9 @@ summarise_marker_dist_ecoli <- function(ec_amr_meta=ec_amr_meta, marker) {
 }
 
 # ast: must have columns 'Antibiotic', `Resistance phenotype`, sample IDs in 'BioSample'
-# amr_binary: binary presence/absence data for markers, sample IDs in 'sample_accession'
+# amr_binary: binary presence/absence data for markers, sample IDs in 'sample_accession' from Enterobase
 # gene_class_list: must have columns 'gene', 'Class' and 'Subclass'
-# regene_class OR regene_subclass: class or subclass for which to identify 'solo' markers
+# refgene_class OR refgene_subclass: class or subclass for which to identify 'solo' markers
 solo_marker <- function(ast, antibiotic, gene_class_list, amr_binary, refgene_class=NULL, refgene_subclass=NULL, plot_cols=c("resistant"="IndianRed", "intermediate"="orange", "nonsusceptible"="orange", "susceptible"="lightgrey", "not defined"="white")) {
 
   # extract AST data for this drug
@@ -81,4 +81,68 @@ solo_marker <- function(ast, antibiotic, gene_class_list, amr_binary, refgene_cl
   combined_plot <- solo_pheno_plot + ppv_plot + plot_layout(axes="collect", guides="collect") + plot_annotation(title=header, subtitle=paste("vs", antibiotic, "phenotype"))
   
   return(list(solo_stats=solo_stats, solo_count, solo_count_plot, combined_plot=combined_plot))
+}
+
+
+solo_marker_atb <- function(ast_matched, antibiotic, afp_matched, refgene_class=NULL, refgene_subclass=NULL, plot_cols=c("resistant"="IndianRed", "intermediate"="orange", "nonsusceptible"="orange", "susceptible"="lightgrey", "not defined"="white")) {
+  
+  # extract list of relevant drug markers
+  if (!is.null(refgene_class)) {
+    genes <- afp_matched %>% filter(grepl(refgene_class, Class)) %>% pull(`Gene symbol`)
+  }
+  else if (!is.null(refgene_subclass)) {
+    genes <- afp_matched %>% filter(grepl(refgene_subclass, Subclass)) %>% pull(`Gene symbol`)
+  }
+  else {stop("must specify refgene_class or refgene_subclass")}
+  
+  afp_solo_strains <- afp_matched %>% filter(`Gene symbol` %in% genes) %>% 
+    group_by(Name) %>% count() %>% filter(n==1) %>% pull(Name)
+  
+  # including all samples with AST for ceftriaxone and AFP results, even if no genes reported
+  afp_solo_ast <- afp_matched %>% filter(`Gene symbol` %in% genes) %>% 
+    filter(Name %in% afp_solo_strains) %>% right_join(ast_matched %>% 
+    filter(Antibiotic==antibiotic), join_by("Name"=="BioSample"))
+  
+  # solo genes
+  solo_count <- afp_solo_ast %>% group_by(`Gene symbol`) %>% count()
+  solo_count_plot <- solo_count %>% filter(!is.na(`Gene symbol`)) %>%
+    ggplot(aes(x=`Gene symbol`, y=n)) + geom_col() + coord_flip() + theme_light()
+  
+  # solo PPV
+  solo_stats_R <- afp_solo_ast %>% group_by(`Gene symbol`) %>% summarise(total=sum(`Resistance phenotype` %in% c("resistant", "intermediate", "susceptible")), n=sum(`Resistance phenotype`=="resistant"), p=n/total, se=sqrt(p*(1-p)/total), ci.lower=max(0,p-1.96*se), ci.upper=min(1,p+1.96*se)) %>% mutate(category="resistant")
+  solo_stats_NWT <- afp_solo_ast %>% group_by(`Gene symbol`) %>% summarise(total=sum(`Resistance phenotype` %in% c("resistant", "intermediate", "susceptible")), n=sum(`Resistance phenotype`%in% c("resistant", "intermediate")), p=n/total, se=sqrt(p*(1-p)/total), ci.lower=max(0,p-1.96*se), ci.upper=min(1,p+1.96*se)) %>% mutate(category="nonsusceptible")
+  solo_stats <- bind_rows(solo_stats_R, solo_stats_NWT) %>% 
+    relocate(category, .before=n)
+  
+  # solo plots
+  
+  pd <- position_dodge(width=0.8) # position dodge for coefficient plots
+  plot_cols<-c("resistant"="IndianRed", "intermediate"="orange", "nonsusceptible"="orange", "susceptible"="lightgrey", "not defined"="white")
+  
+  ppv_plot <- solo_stats %>% 
+    filter(!is.na(`Gene symbol`)) %>%
+    ggplot(aes(y=`Gene symbol`, group=category, col=category)) +
+    geom_vline(xintercept=0.5, linetype=2) +
+    geom_linerange(aes(xmin=ci.lower, xmax=ci.upper), position=pd) +
+    geom_point(aes(x=p), position=pd) + 
+    theme_bw() +
+    scale_y_discrete(labels=paste0("(n=",solo_count$n,")"), position="right") + 
+    labs(y="", x="PPV", col="Category") + 
+    scale_colour_manual(values=plot_cols) + xlim(0,1)
+  
+  solo_pheno_plot <- afp_solo_ast %>% 
+    filter(!is.na(`Gene symbol`)) %>%
+    mutate(`Resistance phenotype`=fct_relevel(`Resistance phenotype`, "not defined", "susceptible", "intermediate", "resistant")) %>%
+    ggplot(aes(x=`Gene symbol`, fill=`Resistance phenotype`)) + 
+    geom_bar(stat="count", position="fill") + 
+    scale_fill_manual(values=plot_cols) + 
+    coord_flip() + 
+    geom_text(aes(label=..count..), stat="count", position=position_fill(vjust = .5), size=3) + 
+    theme_light() + labs(x="", y="Proportion", fill="Phenotype")
+  
+  if (!is.null(refgene_class)) {header=paste0("Solo markers for class '", tolower(refgene_class), "'") }
+  else if (!is.null(refgene_subclass)) {header=paste0("Solo markers for subclass '", tolower(refgene_subclass), "'") }
+  combined_plot <- solo_pheno_plot + ppv_plot + plot_layout(axes="collect", guides="collect") + plot_annotation(title=header, subtitle=paste("vs", antibiotic, "phenotype"))
+  
+  return(list(solo_stats=solo_stats, solo_count=solo_count, solo_count_plot=solo_count_plot, combined_plot=combined_plot))
 }
