@@ -23,6 +23,6 @@ ecoli_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% 
 ```
 
 This repo contains the processed AMRfinderplus output files for 
-_Escherichia coli_: `ATB_Ecoli_AFP.csv.gz` - 9,179,705 lines for 314,978 unique genomes
-_Salmonella enterica_: `ATB_Salmonella_AFP.csv.gz` - 6,133,567 lines for 534,667 unique genomes
-_Pesudomonas aeruginosa_: `ATB_Pseudomonas_aeruginosa_AFP.csv.gz` - 389,574 lines for 25,057 unique genomes
+_Escherichia coli_: `ATB_Ecoli_AFP.csv.gz` - 9,179,705 lines for 314,978 unique genomes (43 MB)
+_Salmonella enterica_: `ATB_Salmonella_AFP.csv.gz` - 6,133,567 lines for 534,667 unique genomes (26 MB)
+_Pesudomonas aeruginosa_: `ATB_Pseudomonas_aeruginosa_AFP.csv.gz` - 389,574 lines for 25,057 unique genomes (7.6 MB)
