@@ -1,6 +1,15 @@
 # AMRrulesR
 
-AMRFinderPlus (3.12.8, DB 2024-01-31.1) output for all samples in [AllTheBacteria](https://github.com/AllTheBacteria/AllTheBacteria/tree/main/reproducibility/All-samples/AMR/AMRFinderPlus) can be downloaded from here: [https://osf.io/zgexh](https://osf.io/zgexh) (0.5GB .tsv.gz file, expands to 6.2GB)
+Data files
+
+`Ecoli_AST.tsv.gz` - public AST data downloaded from [NCBI AST](https://www.ncbi.nlm.nih.gov/pathogens/ast#scientific_name:Escherichia%20coli) (9094 unique biosamples with AST data on at least one drug (median 15 drugs, IQR 14-18 drugs)) (<2 MB)
+
+`ecoli_output-full_binaryAMR.csv.gz` - AMRfinderplus data exported from Enterobase, converted to binary presence/absence matrix (276,784 unique genomes) (<5 MB)
+`ecoli-output-full.csv.gz` - Enterobase export including metadata, and AMRfinderplus results as presented in the GUI (276,784 unique genomes) (<20 MB)
+
+`refgenes_20241003.tsv` - Local download of NCBI [refgene DB](https://www.ncbi.nlm.nih.gov/pathogens/refgene/) of AMR determinants (<2 MB)
+
+AMRFinderPlus (v3.12.8, DB 2024-01-31.1) output for all samples in [AllTheBacteria](https://github.com/AllTheBacteria/AllTheBacteria/tree/main/reproducibility/All-samples/AMR/AMRFinderPlus) can be downloaded from here: [https://osf.io/zgexh](https://osf.io/zgexh) (0.5GB .tsv.gz file, expands to 6.2GB)
 
 This has >26 M lines, one per genome-gene hit, but as it's the raw AMRfinderplus output it doesn't have any column to indicate the species for each row
 
