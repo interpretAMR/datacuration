@@ -1,0 +1,73 @@
+---
+title: "ATB AMRFP"
+output: html_document
+date: "2024-10-03"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = 'png', echo = TRUE, message = FALSE, warning = FALSE,
+                      cache = FALSE, fig.align = 'center')
+knitr::opts_knit$set(root.dir = getwd())
+
+# Data wrangling
+library(tidyverse)
+library(dplyr)
+library(reshape2)
+library(ComplexUpset)
+library(patchwork)
+
+```
+
+# species calls
+``` {r}
+species_calls <- read_tsv("species_calls.tsv.gz")
+```
+
+# ecoli
+
+```{r }
+ecoli <- species_calls %>% filter(Species=="Escherichia coli") %>% pull(Sample)
+```
+
+``` {r}
+f <- function(x, pos) subset(x, Name %in% ecoli)
+
+ecoli_AFP <- read_tsv_chunked("AMRFP_results.tsv.gz", DataFrameCallback$new(f), chunk_size = 10000)
+
+#write.csv(ecoli_AFP, file="ATB_Ecoli_AFP.csv")
+
+# select columns to make file shareable in github
+ecoli_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>% write_csv(file="ATB_Ecoli_AFP.csv")
+
+```
+
+# salmonella
+
+```{r }
+salmonella <- species_calls %>% filter(Species=="Salmonella enterica") %>% pull(Sample)
+```
+
+``` {r}
+f <- function(x, pos) subset(x, Name %in% salmonella)
+
+salmonella_AFP <- read_tsv_chunked("AMRFP_results.tsv.gz", DataFrameCallback$new(f), chunk_size = 10000)
+
+write.csv(salmonella_AFP, file="ATB_Salmonella_AFP.csv")
+
+```
+
+# pseudomonas
+
+```{r }
+pseudomonas <- read_delim("~/Downloads/species_calls_Pseudomonas_aeruginosa_ID.txt", delim="\t", col_names="id") %>% pull(id)
+
+```
+
+``` {r}
+f <- function(x, pos) subset(x, Name %in% pseudomonas)
+
+pseudomonas_AFP <- read_tsv_chunked("~/Downloads/AMRFP_results.tsv", DataFrameCallback$new(f), chunk_size = 10000)
+
+write.csv(pseudomonas_AFP, file="ATB_Pseudomonas_aeruginosa_AFP.csv")
+
+```

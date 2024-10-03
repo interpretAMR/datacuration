@@ -17,6 +17,7 @@ summarise_marker_dist_ecoli <- function(ec_amr_meta=ec_amr_meta, marker) {
 # gene_class_list: must have columns 'gene', 'Class' and 'Subclass'
 # regene_class OR regene_subclass: class or subclass for which to identify 'solo' markers
 solo_marker <- function(ast, antibiotic, gene_class_list, amr_binary, refgene_class=NULL, refgene_subclass=NULL, plot_cols=c("resistant"="IndianRed", "intermediate"="orange", "nonsusceptible"="orange", "susceptible"="lightgrey", "not defined"="white")) {
+
   # extract AST data for this drug
   ast <- ast %>%
     mutate(`Resistance phenotype`=if_else(`Resistance phenotype` %in% c("resistant", "intermediate", "susceptible"), `Resistance phenotype`, "not defined"))
