@@ -25,9 +25,9 @@ Species calls were made separately for AllTheBacteria using sylph, and can be do
 
 This repo contains files with the AMRfinderplus output extracted for selected species:
 
-* _Escherichia coli_: `ATB_Ecoli_AFP.csv.gz` - 9,179,705 lines for 314,978 unique genomes (43 MB)
-* _Salmonella enterica_: `ATB_Salmonella_AFP.csv.gz` - 6,133,567 lines for 534,667 unique genomes (26 MB)
-* _Pesudomonas aeruginosa_: `ATB_Pseudomonas_aeruginosa_AFP.csv.gz` - 389,574 lines for 25,057 unique genomes (7.6 MB)
+* _Escherichia coli_: `ATB_Ecoli_AFP.tsv.gz` - 9,179,705 lines for 314,978 unique genomes (43 MB)
+* _Salmonella enterica_: `ATB_Salmonella_AFP.tsv.gz` - 6,133,567 lines for 534,667 unique genomes (26 MB)
+* _Pesudomonas aeruginosa_: `ATB_Pseudomonas_aeruginosa_AFP.tsv.gz` - 389,574 lines for 25,057 unique genomes (7.6 MB)
   
 The script `ATB.Rmd` shows how we used R to pull out AMRfinderplus results for genomes belonging to a particular species, which can be used to extract data for other species, like this:
 
@@ -42,5 +42,5 @@ ecoli_AFP <- read_tsv_chunked("AMRFP_results.tsv.gz", DataFrameCallback$new(f), 
 
 # select key columns to keep output file size small-ish
 ecoli_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>%
-  write_csv(file="ATB_Ecoli_AFP.csv")
+  write_tsv(file="ATB_Ecoli_AFP.csv")
 ```
