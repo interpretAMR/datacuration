@@ -1,0 +1,239 @@
+---
+title: "PublicGenoPheno"
+output: html_document
+date: "2024-10-03"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = 'png', echo = TRUE, message = FALSE, warning = FALSE,
+                      cache = FALSE, fig.align = 'center')
+knitr::opts_knit$set(root.dir = getwd())
+
+# Data wrangling
+library(tidyverse)
+library(dplyr)
+library(reshape2)
+library(ComplexUpset)
+library(patchwork)
+
+source("functions.R")
+```
+
+# read AST data - from NCBI
+```{r }
+# E. coli
+ec<-read_delim("Ecoli_AST.tsv.gz") %>% rename(BioSample=`#BioSample`)
+length(unique(ec$BioSample))
+ec %>% group_by(BioSample) %>% summarise(n=length(unique((Antibiotic))))%>% pull(n) %>% summary()
+
+```
+
+# read in refgenes DB
+``` {r}
+refgenes <- read_delim("refgenes_20241003.tsv")
+```
+
+# read Enterobase AMR calls - E. coli
+```{r }
+
+ec_bin <-read_delim("ecoli_output-full_binaryAMR.csv.gz")
+
+ec_gene_counts <- ec_bin %>% select(-uberstrain, -assembly_barcode) %>% colSums() %>% enframe() %>% rename(gene=name, count=value)
+
+ec_gene_counts <- ec_gene_counts %>% left_join(refgenes, by=join_by("gene"=="#Allele")) %>% filter(`Whitelisted taxa`=="Escherichia" | is.na(`Whitelisted taxa`))
+
+ec_gene_counts_alleleMatch <- ec_gene_counts %>% filter(!is.na(Class))
+  
+ec_gene_counts_noAlleleMatch <- ec_gene_counts %>% filter(is.na(Class)) %>% select(gene,count)
+ec_gene_counts_geneFamilyMatch <- ec_gene_counts_noAlleleMatch %>% left_join(refgenes, by=join_by("gene"=="Gene family")) %>% 
+  filter(`Whitelisted taxa`=="Escherichia" | is.na(`Whitelisted taxa`)) %>% group_by(gene) %>% filter(row_number()==1)
+
+ec_gene_counts <- bind_rows(ec_gene_counts_alleleMatch, ec_gene_counts_geneFamilyMatch) %>% relocate(`#Allele`, .after=count)
+```
+
+# read Enterobase full to get accession, pathotype, Clermont type for E. coli
+```{r }
+
+ec_full <-read_delim("ecoli-output-full.csv.gz") %>% 
+  select(uberstrain, assembly_barcode, sample_accession, secondary_sample_accession, country, amrfinder_db_version, amrfinder_version, Country, Pathovar, `Clermont Type (ClermonTyping)`, `Clermont Type (EzClermont)`)
+
+ec_amr_meta <- left_join(ec_full, ec_bin, by=c("uberstrain", "assembly_barcode"))
+
+```
+
+# get AMRfinderplus and AST data where both are available
+``` {r}
+sum(unique(ec$BioSample) %in% ec_amr_meta$sample_accession)
+sum(unique(ec$BioSample) %in% ec_amr_meta$secondary_sample_accession)
+
+# AST data for strains with matching AMRfinder calls from Enterobase
+ec_amrfinder_ast <- ec %>% filter(BioSample %in% ec_full$sample_accession)
+
+# AMRfinder binary matrix from Enterobase, for strains with matching AST data from NCBI
+amrfinder_full <- ec_amr_meta %>% filter(sample_accession %in% ec$BioSample)
+```
+
+# distribution of common core-gene mutations, by Pathovar / Clermont Type 
+``` {r}
+
+pmrB_Y358N <- summarise_marker_dist_ecoli(ec_amr_meta=ec_amr_meta, marker="pmrB_Y358N")
+glpT_E448K <- summarise_marker_dist_ecoli(ec_amr_meta=ec_amr_meta, marker="glpT_E448K")
+
+(glpT_E448K$clermont_plot + pmrB_Y358N$clermont_plot + plot_layout(axes="collect")) / 
+(glpT_E448K$pathovar_plot + pmrB_Y358N$pathovar_plot + plot_layout(axes="collect"))
+
+```
+
+# solo markers for ceftriaxone
+``` {r}
+cef_cephalosporin <- solo_marker(ast=ec_amrfinder_ast, antibiotic="ceftriaxone", refgene_subclass="CEPHALOSPORIN", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+cef_cephalosporin$solo_stats
+
+cef_cephalosporin$combined_plot
+```
+
+
+# solo markers for fosfomycin
+``` {r}
+fos_fosfomycin <- solo_marker(ast=ec_amrfinder_ast, antibiotic="fosfomycin", refgene_subclass="FOSFOMYCIN", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+fos_fosfomycin$solo_stats
+
+fos_fosfomycin$combined_plot
+
+```
+
+
+# solo markers for colistin
+``` {r}
+colistin <- solo_marker(ast=ec_amrfinder_ast, antibiotic="colistin", refgene_subclass="COLISTIN", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+colistin$solo_stats
+
+colistin$combined_plot
+
+```
+
+# solo markers for ceftriaxone
+``` {r}
+cef_cephalosporin <- solo_marker(ast=ec_amrfinder_ast, antibiotic="ceftriaxone", refgene_subclass="CEPHALOSPORIN", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+cef_cephalosporin$solo_stats
+
+cef_cephalosporin$combined_plot
+```
+
+# solo markers for gentamicin vs aminoglycosides
+``` {r}
+gentamicin_agly <- solo_marker(ast=ec_amrfinder_ast, antibiotic="gentamicin", refgene_class="AMINOGLYCOSIDE", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+gentamicin_agly$solo_stats
+
+gentamicin_agly$combined_plot
+```
+
+# solo markers for amikacin vs aminoglycosides
+``` {r}
+amikacin_agly <- solo_marker(ast=ec_amrfinder_ast, antibiotic="amikacin", refgene_class="AMINOGLYCOSIDE", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+amikacin_agly$solo_stats
+
+amikacin_agly$combined_plot
+```
+
+# solo markers for tobramycin vs aminoglycosides
+``` {r}
+tobramycin_agly <- solo_marker(ast=ec_amrfinder_ast, antibiotic="tobramycin", refgene_class="AMINOGLYCOSIDE", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+tobramycin_agly$solo_stats
+
+tobramycin_agly$combined_plot
+```
+# solo markers for ampicillin
+``` {r}
+ampicillin <- solo_marker(ast=ec_amrfinder_ast, antibiotic="ampicillin", refgene_class="BETA-LACTAM", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+ampicillin$solo_stats
+
+ampicillin$combined_plot
+```
+# solo markers for azithromycin
+``` {r}
+azi <- solo_marker(ast=ec_amrfinder_ast, antibiotic="azithromycin", refgene_subclass="AZITHROMYCIN", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+azi$solo_stats
+
+azi$combined_plot
+```
+
+# solo markers for imipenem
+``` {r}
+imipenem <- solo_marker(ast=ec_amrfinder_ast, antibiotic="imipenem", refgene_subclass="CARBAPENEM", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+imipenem$solo_stats
+
+imipenem$combined_plot
+```
+
+# solo markers for meropenem
+``` {r}
+meropenem <- solo_marker(ast=ec_amrfinder_ast, antibiotic="meropenem", refgene_subclass="CARBAPENEM", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+meropenem$solo_stats
+
+meropenem$combined_plot
+```
+
+# solo markers for ceftazidime
+``` {r}
+ceftazidime_cephalosporin <- solo_marker(ast=ec_amrfinder_ast, antibiotic="ceftazidime", refgene_subclass="CEPHALOSPORIN", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+ceftazidime_cephalosporin$solo_stats
+
+ceftazidime_cephalosporin$combined_plot
+```
+
+# solo markers for chloramphenicol
+``` {r}
+chloramphenicol <- solo_marker(ast=ec_amrfinder_ast, antibiotic="chloramphenicol", refgene_class="PHENICOL", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+chloramphenicol$solo_stats
+
+chloramphenicol$combined_plot
+```
+
+# solo markers for trimethoprim
+``` {r}
+trimethoprim <- solo_marker(ast=ec_amrfinder_ast, antibiotic="trimethoprim-sulfamethoxazole", refgene_subclass="TRIMETHOPRIM", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+trimethoprim$solo_stats
+
+trimethoprim$combined_plot
+```
+
+# solo markers for tetracycline
+``` {r}
+tet <- solo_marker(ast=ec_amrfinder_ast, antibiotic="tetracycline", refgene_class="TETRACYCLINE", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+tet$solo_stats
+
+tet$combined_plot
+```
+
+# solo markers for tigecycline
+``` {r}
+tig <- solo_marker(ast=ec_amrfinder_ast, antibiotic="tigecycline", refgene_subclass="TIGECYCLINE", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+tig$solo_stats
+
+```
+
+# solo markers for ciprofloxacin
+``` {r}
+cip <- solo_marker(ast=ec_amrfinder_ast, antibiotic="ciprofloxacin", refgene_subclass="QUINOLONE", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+cip$solo_stats
+
+cip$combined_plot
+```

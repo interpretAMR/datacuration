@@ -34,11 +34,13 @@ f <- function(x, pos) subset(x, Name %in% ecoli)
 
 ecoli_AFP <- read_tsv_chunked("AMRFP_results.tsv.gz", DataFrameCallback$new(f), chunk_size = 10000)
 
-#write.csv(ecoli_AFP, file="ATB_Ecoli_AFP.csv")
+# write.csv(ecoli_AFP, file="ATB_Ecoli_AFP.csv")
 
 # select columns to make file shareable in github
-ecoli_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>% write_csv(file="ATB_Ecoli_AFP.csv")
+ecoli_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>% write_tsv(file="ATB_Ecoli_AFP.tsv")
 
+dim(ecoli_AFP)
+length(unique(ecoli_AFP$Name))
 ```
 
 # salmonella
@@ -52,8 +54,11 @@ f <- function(x, pos) subset(x, Name %in% salmonella)
 
 salmonella_AFP <- read_tsv_chunked("AMRFP_results.tsv.gz", DataFrameCallback$new(f), chunk_size = 10000)
 
-write.csv(salmonella_AFP, file="ATB_Salmonella_AFP.csv")
+# select columns to make file shareable in github
+salmonella_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>% write_tsv(file="ATB_Salmonella_AFP.tsv")
 
+dim(salmonella_AFP)
+length(unique(salmonella_AFP$Name))
 ```
 
 # pseudomonas
@@ -68,6 +73,8 @@ f <- function(x, pos) subset(x, Name %in% pseudomonas)
 
 pseudomonas_AFP <- read_tsv_chunked("~/Downloads/AMRFP_results.tsv", DataFrameCallback$new(f), chunk_size = 10000)
 
-write.csv(pseudomonas_AFP, file="ATB_Pseudomonas_aeruginosa_AFP.csv")
+write_tsv(pseudomonas_AFP, file="ATB_Pseudomonas_aeruginosa_AFP.tsv")
 
+dim(pseudomonas_AFP)
+length(unique(pseudomonas_AFP$Name))
 ```
