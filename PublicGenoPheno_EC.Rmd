@@ -221,6 +221,14 @@ tet$solo_stats
 tet$combined_plot
 ```
 
+# solo markers for tigecycline
+``` {r}
+tig <- solo_marker(ast=ec_amrfinder_ast, antibiotic="tigecycline", refgene_subclass="TIGECYCLINE", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
+
+tig$solo_stats
+
+```
+
 # solo markers for ciprofloxacin
 ``` {r}
 cip <- solo_marker(ast=ec_amrfinder_ast, antibiotic="ciprofloxacin", refgene_subclass="QUINOLONE", gene_class_list=ec_gene_counts, amr_binary=amrfinder_full)
