@@ -1,6 +1,6 @@
 # AMRrulesR
 
-This repo will be a space for sharing code to process & analyse matched AMR genotype & phenotype data, to support the ESGEM-AMR working groups to [develop AMRrules](https://github.com/interpretAMR/AMRrulesCuration) for the interpretation of AMR genotype data in terms of expected phenotypes.
+This repo will be a space for sharing R code to process & analyse matched AMR genotype & phenotype data, to support the ESGEM-AMR working groups to [develop AMRrules](https://github.com/interpretAMR/AMRrulesCuration) for the interpretation of AMR genotype data in terms of expected phenotypes.
 
 ## Data files
 
