@@ -1,13 +1,17 @@
-# inputs
-# ec_amr_meta: binary AMRfinder plus results from Enterobase, with metadata fields:
-#         - `Clermont Type (ClermonTyping)`
-#         - `Pathovar`
-# marker: name of marker to summarise
+library(tidyverse)
+library(dplyr)
+library(patchwork)
+library(logistf)
 
-summarise_marker_dist_ecoli <- function(ec_amr_meta=ec_amr_meta, marker) {
-  clermont <- ec_amr_meta %>% group_by(`Clermont Type (ClermonTyping)`) %>% summarise(freq=mean(eval(parse(text=marker))))
+
+summarise_marker_dist_ec_types <- function(afp_all=afp_all, ec_types=ec_types, marker) {
+  afp_marker_binary <- afp_all %>% filter(`Gene symbol`==marker) %>% 
+    right_join(ec_types %>% filter(Name %in%unique(afp_all$Name))) %>% 
+    mutate(marker_detected=if_else(is.na(`Gene symbol`), 0, 1)) %>%
+    select(Name, marker_detected, Pathovar, `Clermont Type (ClermonTyping)`) %>% distinct()
+  clermont <- afp_marker_binary %>% group_by(`Clermont Type (ClermonTyping)`) %>% summarise(freq=mean(marker_detected), n=sum(marker_detected), denom=n())
   clermont_plot <- clermont %>% ggplot(aes(y=`Clermont Type (ClermonTyping)`, x=freq)) + geom_col() + theme_light() + ggtitle(marker)
-  pathovar <- ec_amr_meta %>% group_by(Pathovar) %>% summarise(freq=mean(eval(parse(text=marker))))
+  pathovar <- afp_marker_binary %>% group_by(Pathovar) %>% summarise(freq=mean(marker_detected), n=sum(marker_detected), denom=n())
   pathovar_plot <- pathovar %>% ggplot(aes(y=Pathovar, x=freq)) + geom_col() + theme_light() + ggtitle(marker)
   return(list(clermont=clermont, clermont_plot=clermont_plot, pathovar=pathovar, pathovar_plot=pathovar_plot))
 }
@@ -88,7 +92,7 @@ solo_marker_atb <- function(ast_matched, antibiotic, afp_matched, refgene_class=
   
   # extract list of relevant drug markers
   if (!is.null(refgene_class)) {
-    genes <- afp_matched %>% filter(grepl(refgene_class, Class)) %>% pull(`Gene symbol`)
+    genes <- afp_matched %>% filter(Class %in% refgene_class) %>% pull(`Gene symbol`)
   }
   else if (!is.null(refgene_subclass)) {
     genes <- afp_matched %>% filter(grepl(refgene_subclass, Subclass)) %>% pull(`Gene symbol`)
@@ -100,8 +104,8 @@ solo_marker_atb <- function(ast_matched, antibiotic, afp_matched, refgene_class=
   
   # including all samples with AST for ceftriaxone and AFP results, even if no genes reported
   afp_solo_ast <- afp_matched %>% filter(`Gene symbol` %in% genes) %>% 
-    filter(Name %in% afp_solo_strains) %>% right_join(ast_matched %>% 
-    filter(Antibiotic==antibiotic), join_by("Name"=="BioSample"))
+    filter(Name %in% afp_solo_strains) %>% 
+    right_join(ast_matched %>% filter(Antibiotic==antibiotic), join_by("Name"=="BioSample"))
   
   # solo genes
   solo_count <- afp_solo_ast %>% group_by(`Gene symbol`) %>% count()
@@ -145,4 +149,60 @@ solo_marker_atb <- function(ast_matched, antibiotic, afp_matched, refgene_class=
   combined_plot <- solo_pheno_plot + ppv_plot + plot_layout(axes="collect", guides="collect") + plot_annotation(title=header, subtitle=paste("vs", antibiotic, "phenotype"))
   
   return(list(solo_stats=solo_stats, solo_count=solo_count, solo_count_plot=solo_count_plot, combined_plot=combined_plot))
+}
+
+getBinMatrix <- function(ast_matched, antibiotic, afp_matched, refgene_class=NULL, refgene_subclass=NULL, maf=10, plot_cols=c("resistant"="IndianRed", "intermediate"="orange", "nonsusceptible"="orange", "susceptible"="lightgrey", "not defined"="white")) {
+  
+  # extract list of relevant drug markers
+  if (!is.null(refgene_class)) {
+    genes <- afp_matched %>% filter(Class %in% refgene_class) %>% pull(`Gene symbol`)
+  }
+  else if (!is.null(refgene_subclass)) {
+    genes <- afp_matched %>% filter(grepl(refgene_subclass, Subclass)) %>% pull(`Gene symbol`)
+  }
+  else {stop("must specify refgene_class or refgene_subclass")}
+  
+  afp_binary_markers <- afp_matched %>% 
+    filter(`Gene symbol` %in% genes) %>% 
+    group_by(Name, `Gene symbol`) %>% count() %>%
+    ungroup() %>%
+    right_join(ast_matched %>% filter(Antibiotic==antibiotic) %>% select(BioSample), 
+               join_by("Name"=="BioSample")) %>%
+    distinct() %>%
+    pivot_wider(id_cols=Name, names_from=`Gene symbol`, values_from=n, values_fill=0) 
+  
+  if ("NA" %in% colnames(afp_binary_markers)) {
+    afp_binary_markers <- afp_binary_markers %>%select(-c("NA"))
+  }
+  afp_binary_markers <- afp_binary_markers %>% 
+    select(Name, sort(names(.))) %>%
+    inner_join(ast_matched %>% filter(Antibiotic==antibiotic) %>% select(BioSample, `Resistance phenotype`), 
+               join_by("Name"=="BioSample")) %>%
+    mutate(resistant=case_when(`Resistance phenotype`=="resistant" ~ 1,
+                              `Resistance phenotype` %in% c("intermediate", "susceptible") ~ 0,
+                              TRUE ~ NA)) %>%
+    select(-`Resistance phenotype`, -Name) %>%
+    filter(!is.na(resistant)) %>%
+    select(resistant, where(~sum(.x)>=maf))
+  
+  return(afp_binary_markers)
+  
+}
+
+
+# function to tabulate estimate, 95% CI, p-value from logistf regression model
+logreg_details <- function(model) {
+  model_summary <- cbind(est=model$coefficients, ci.lower=model$ci.lower, ci.upper=model$ci.upper, pval=model$prob) %>%
+    as_tibble(rownames="marker")
+  return(model_summary)
+}
+
+glm_details <- function(model) {
+  ci <- confint(model) %>% as_tibble(rownames="marker") %>%
+    rename(ci.lower=`2.5 %`, ci.upper=`97.5 %`)
+  model_summary <- summary(model)$coef %>% 
+    as_tibble(rownames="marker") %>% 
+    rename(est=Estimate, pval=`Pr(>|z|)`) %>% 
+    select(marker, est, pval) %>% left_join(ci)
+  return(model_summary)
 }

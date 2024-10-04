@@ -39,6 +39,14 @@ ecoli <- species_calls %>% filter(Species=="Escherichia coli") %>% pull(Sample)
 
 afp_status <- read_tsv("AMRFP_status.tsv.gz") %>% filter(sample %in% ecoli)
 denominator <- afp_status %>% filter(status=="PASS") %>% nrow()
+
+# afp results including null row for each genome that ran but returned no hits
+afp_all <- afp_status %>% rename(Name=sample) %>% left_join(afp) %>% filter(status=="PASS")
+```
+
+# read Enterobase typing info
+``` {r}
+ec_types <- read_tsv(file="ec_types_enterobase.tsv") %>% rename(Name=sample_accession)
 ```
 
 # get AMRfinderplus and AST data where both are available
@@ -64,9 +72,52 @@ afp_matched %>% pull(Name) %>% unique() %>% length()
 
 # number with pmrB_Y358N
 (gene_counts %>% filter(`Gene symbol`=="pmrB_Y358N") %>% pull(n))/denominator
+
+pmrB_Y358N <- summarise_marker_dist_ec_types(afp_all=afp_all, ec_types=ec_types, marker="pmrB_Y358N")
+
+pmrB_Y358N$clermont
+pmrB_Y358N$pathovar
+pmrB_Y358N$clermont_plot
+pmrB_Y358N$pathovar_plot
   
 # number with glpT_E448K 
 (gene_counts %>% filter(`Gene symbol`=="glpT_E448K") %>% pull(n))/denominator
+
+glpT_E448K <- summarise_marker_dist_ec_types(afp_all=afp_all, ec_types=ec_types, marker="glpT_E448K")
+
+glpT_E448K$clermont
+glpT_E448K$pathovar
+glpT_E448K$clermont_plot
+glpT_E448K$pathovar_plot
+```
+
+# blaEC
+``` {r}
+# blaEC from full data, so we get accessions
+blaEC <- read_tsv("bla_EC_hits.tsv")
+
+blaEC_summary <- summarise_marker_dist_ec_types(afp_all=afp_all, ec_types=ec_types, marker="blaEC")
+
+blaEC_summary$clermont_plot
+blaEC_summary$pathovar_plot
+
+# boxplot of identity of hits, stratified by accession of closest ref seq
+blaEC %>% right_join(ec_types %>% filter(Name %in%unique(afp_all$Name))) %>% 
+  mutate(ec_label=paste(`Gene symbol`, `Accession of closest sequence`)) %>% 
+  ggplot(aes(x=ec_label, y=`% Identity to reference sequence`)) + geom_boxplot() + coord_flip()
+
+# distribution of alleles per clade
+blaEC_alleles_clade <- blaEC %>% right_join(ec_types %>% filter(Name %in%unique(afp_all$Name))) %>% 
+  ggplot(aes(x=`Clermont Type (ClermonTyping)`, fill=`Accession of closest sequence`)) + geom_bar() + coord_flip()
+
+# distribution of alleles per pathovar
+blaEC_alleles_pathovar <- blaEC %>% right_join(ec_types %>% filter(Name %in%unique(afp_all$Name))) %>% 
+  ggplot(aes(x=Pathovar, fill=`Accession of closest sequence`)) + geom_bar() + coord_flip()
+
+blaEC_alleles_clade + blaEC_alleles_pathovar + plot_layout(guides="collect")
+
+(gene_counts %>% filter(`Gene symbol`=="blaEC") %>% pull(n))/denominator
+
 
 ```
 
@@ -77,6 +128,27 @@ cef_cephalosporin <- solo_marker_atb(ast_matched = ast_matched, afp_matched=afp_
 
 cef_cephalosporin$solo_stats
 cef_cephalosporin$combined_plot
+
+```
+
+# model for ceftriaxone
+``` {r}
+cef_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "ceftriaxone", refgene_subclass = "CEPHALOSPORIN")
+
+cef_model <- logistf(resistant ~ ., data=cef_binary)
+
+cef_logreg <- logreg_details(cef_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+cef_logreg
 ```
 
 # solo markers for fosfomycin
@@ -87,6 +159,26 @@ fos_fosfomycin$solo_stats
 
 fos_fosfomycin$combined_plot
 
+```
+
+# model for fosfomycin
+``` {r}
+fos_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "fosfomycin", refgene_subclass = "FOSFOMYCIN")
+
+fos_model <- logistf(resistant ~ ., data=fos_binary)
+
+fos_logreg <- logreg_details(fos_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+fos_logreg
 ```
 
 
@@ -100,14 +192,27 @@ colistin$combined_plot
 
 ```
 
-# solo markers for ceftriaxone
+# model for colistin
 ``` {r}
-cef_cephalosporin <- solo_marker_atb(ast_matched = ast_matched, antibiotic="ceftriaxone", refgene_subclass="CEPHALOSPORIN", afp_matched=afp_matched)
+col_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "colistin", refgene_subclass = "COLISTIN")
 
-cef_cephalosporin$solo_stats
+col_model <- logistf(resistant ~ ., data=col_binary)
 
-cef_cephalosporin$combined_plot
+col_logreg <- logreg_details(col_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+col_logreg
+
 ```
+
 
 # solo markers for gentamicin vs aminoglycosides
 ``` {r}
@@ -116,6 +221,43 @@ gentamicin_agly <- solo_marker_atb(ast_matched = ast_matched, antibiotic="gentam
 gentamicin_agly$solo_stats
 
 gentamicin_agly$combined_plot
+```
+
+# model for gentamicin
+``` {r}
+gent_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "gentamicin", refgene_class = "AMINOGLYCOSIDE")
+
+gent_model_glm <- glm(resistant ~., family=binomial(link="logit"), data=gent_binary)
+
+gent_logreg_glm <- summary(gent_model_glm)$coef %>% 
+    as_tibble(rownames="marker") %>% 
+    rename(est=Estimate, pval=`Pr(>|z|)`) %>% 
+    select(marker, est, pval) %>%
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient", col="p<0.05")
+
+gent_logreg_glm
+
+gent_model <- logistf(resistant ~ ., data=gent_binary[,colSums(gent_binary)>=20])
+
+gent_logistf <- logreg_details(gent_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+gent_logistf
 ```
 
 # solo markers for amikacin vs aminoglycosides
@@ -127,6 +269,26 @@ amikacin_agly$solo_stats
 amikacin_agly$combined_plot
 ```
 
+# model for amikacin
+``` {r}
+amk_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "amikacin", refgene_class = "AMINOGLYCOSIDE")
+
+amk_model <- logistf(resistant ~ ., data=amk_binary)
+
+amk_logreg <- logreg_details(amk_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+amk_logreg
+```
+
 # solo markers for tobramycin vs aminoglycosides
 ``` {r}
 tobramycin_agly <- solo_marker_atb(ast_matched = ast_matched, antibiotic="tobramycin", refgene_class="AMINOGLYCOSIDE", afp_matched=afp_matched)
@@ -135,6 +297,27 @@ tobramycin_agly$solo_stats
 
 tobramycin_agly$combined_plot
 ```
+
+# model for tobramycin
+``` {r}
+tob_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "tobramycin", refgene_class = "AMINOGLYCOSIDE")
+
+tob_model <- logistf(resistant ~ ., data=tob_binary)
+
+tob_logreg <- logreg_details(tob_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+tob_logreg
+```
+
 # solo markers for ampicillin
 ``` {r}
 ampicillin <- solo_marker_atb(ast_matched = ast_matched, antibiotic="ampicillin", refgene_class="BETA-LACTAM", afp_matched=afp_matched)
@@ -143,6 +326,31 @@ ampicillin$solo_stats
 
 ampicillin$combined_plot
 ```
+
+# model for ampicillin
+``` {r}
+amp_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "ampicillin", refgene_class = "BETA-LACTAM")
+
+#amp_model <- logistf(resistant ~ ., data=amp_binary[,colSums(amp_binary)>=20])
+
+amp_model_glm <- glm(resistant ~., family=binomial(link="logit"), data=amp_binary)
+
+amp_logreg_glm <- summary(amp_model_glm)$coef %>% 
+    as_tibble(rownames="marker") %>% 
+    rename(est=Estimate, pval=`Pr(>|z|)`) %>% 
+    select(marker, est, pval) %>%
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient", col="p<0.05")
+
+amp_logreg_glm
+```
+
 # solo markers for azithromycin
 ``` {r}
 azi <- solo_marker_atb(ast_matched = ast_matched, antibiotic="azithromycin", refgene_subclass="AZITHROMYCIN", afp_matched=afp_matched)
@@ -150,6 +358,26 @@ azi <- solo_marker_atb(ast_matched = ast_matched, antibiotic="azithromycin", ref
 azi$solo_stats
 
 azi$combined_plot
+```
+
+# model for azithromycin
+``` {r}
+azi_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "azithromycin", refgene_subclass = "AZITHROMYCIN", maf=1)
+
+azi_model <- logistf(resistant ~ ., data=azi_binary)
+
+azi_logreg <- logreg_details(azi_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+azi_logreg
 ```
 
 # solo markers for imipenem
@@ -161,6 +389,26 @@ imipenem$solo_stats
 imipenem$combined_plot
 ```
 
+# model for imipenem
+``` {r}
+imp_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "imipenem", refgene_subclass = "CARBAPENEM", maf=5)
+
+imp_model <- logistf(resistant ~ ., data=imp_binary)
+
+imp_logreg <- logreg_details(imp_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+imp_logreg
+```
+
 # solo markers for meropenem
 ``` {r}
 meropenem <- solo_marker_atb(ast_matched = ast_matched, antibiotic="meropenem", refgene_subclass="CARBAPENEM", afp_matched=afp_matched)
@@ -168,6 +416,26 @@ meropenem <- solo_marker_atb(ast_matched = ast_matched, antibiotic="meropenem", 
 meropenem$solo_stats
 
 meropenem$combined_plot
+```
+
+# model for meropenem
+``` {r}
+mer_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "meropenem", refgene_subclass = "CARBAPENEM", maf=5)
+
+mer_model <- logistf(resistant ~ ., data=mer_binary)
+
+mer_logreg <- logreg_details(mer_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+mer_logreg
 ```
 
 # solo markers for ceftazidime
@@ -179,6 +447,27 @@ ceftazidime_cephalosporin$solo_stats
 ceftazidime_cephalosporin$combined_plot
 ```
 
+# model for ceftazidime
+``` {r}
+caz_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "ceftazidime", refgene_subclass = "CEPHALOSPORIN")
+
+caz_model <- logistf(resistant ~ ., data=caz_binary)
+
+caz_logreg <- logreg_details(caz_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+caz_logreg
+```
+
+
 # solo markers for chloramphenicol
 ``` {r}
 chloramphenicol <- solo_marker_atb(ast_matched = ast_matched, antibiotic="chloramphenicol", refgene_class="PHENICOL", afp_matched=afp_matched)
@@ -188,15 +477,55 @@ chloramphenicol$solo_stats
 chloramphenicol$combined_plot
 ```
 
-# solo markers for trimethoprim
+# model for chloramphenicol
 ``` {r}
-trimethoprim <- solo_marker_atb(ast_matched = ast_matched, antibiotic="trimethoprim-sulfamethoxazole", refgene_subclass="TRIMETHOPRIM", afp_matched=afp_matched)
+chloramphenicol_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "chloramphenicol", refgene_class = "PHENICOL")
 
-trimethoprim$solo_stats
+chloramphenicol_model <- logistf(resistant ~ ., data=chloramphenicol_binary)
 
-trimethoprim$combined_plot
+chloramphenicol_logreg <- logreg_details(chloramphenicol_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+chloramphenicol_logreg
 ```
 
+# solo markers for trimethoprim
+``` {r}
+tmx <- solo_marker_atb(ast_matched = ast_matched, antibiotic="trimethoprim-sulfamethoxazole", refgene_class=c("TRIMETHOPRIM", "SULFONAMIDE"), afp_matched=afp_matched)
+
+tmx$solo_stats
+
+tmx$combined_plot
+```
+
+
+# model for trimethoprim
+``` {r}
+tmx_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "trimethoprim-sulfamethoxazole", refgene_class = c("TRIMETHOPRIM", "SULFONAMIDE"))
+
+tmx_model <- logistf(resistant ~ ., data=tmx_binary)
+
+tmx_logreg <- logreg_details(tmx_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+tmx_logreg
+```
 # solo markers for tetracycline
 ``` {r}
 tet <- solo_marker_atb(ast_matched = ast_matched, antibiotic="tetracycline", refgene_class="TETRACYCLINE", afp_matched=afp_matched)
@@ -204,6 +533,26 @@ tet <- solo_marker_atb(ast_matched = ast_matched, antibiotic="tetracycline", ref
 tet$solo_stats
 
 tet$combined_plot
+```
+
+# model for tetracycline
+``` {r}
+tet_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "tetracycline", refgene_class = "TETRACYCLINE")
+
+tet_model <- logistf(resistant ~ ., data=tet_binary)
+
+tet_logreg <- logreg_details(tet_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+tet_logreg
 ```
 
 # solo markers for tigecycline
@@ -221,4 +570,24 @@ cip <- solo_marker_atb(ast_matched = ast_matched, antibiotic="ciprofloxacin", re
 cip$solo_stats
 
 cip$combined_plot
+```
+
+# model for ciprofloxacin
+``` {r}
+cip_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched=afp_matched, antibiotic = "ciprofloxacin", refgene_class = "QUINOLONE")
+
+cip_model <- logistf(resistant ~ ., data=cip_binary)
+
+cip_logreg <- logreg_details(cip_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+cip_logreg
 ```
