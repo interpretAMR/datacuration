@@ -1,0 +1,440 @@
+---
+title: "PublicGenoPheno AllTheBacteria Pseudomonas"
+output: html_document
+date: "2024-10-03"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = 'png', echo = TRUE, message = FALSE, warning = FALSE,
+                      cache = FALSE, fig.align = 'center')
+knitr::opts_knit$set(root.dir = getwd())
+
+# Data wrangling
+library(tidyverse)
+library(dplyr)
+library(patchwork)
+library(AMR)
+library(ComplexUpset)
+library(scales)
+source("functions.R")
+```
+
+
+# read ATB AMRfinderplus calls - filter to high quality
+```{r }
+
+species_calls <- read_tsv("genotypes/ATB_species_calls.tsv.gz")
+pseudomonas <- species_calls %>% filter(Species=="Pseudomonas aeruginosa" & HQ) # high quality species calls only
+
+# AMRfinderplus data for samples with high quality species call as PA
+afp <-read_tsv("genotypes/ATB_Pseudomonas_aeruginosa_AFP.tsv.gz") %>% 
+  left_join(species_calls, by=join_by("Name"=="Sample")) %>% filter(HQ) 
+
+denom <- afp %>% select(Name) %>% unique %>% nrow()
+denom
+
+# read in AMRfinderplus status, in case we had samples that were high quality species matches but returned no AMRFP hits
+afp_status <- read_tsv("genotypes/ATB_AMRFP_status.tsv.gz") %>% 
+  filter(sample %in% pseudomonas$Sample)
+
+# check that all passed
+afp_status %>% filter(status!="PASS") %>% nrow()
+
+# only 1 genome with no hits, ignore
+sum(!(afp_status$sample %in% afp$Name))
+species_calls %>% filter(Sample==afp_status$sample[!(afp_status$sample %in% afp$Name)])
+```
+
+# check for core genes
+``` {r}
+
+# gene frequency per species
+gene_counts <- afp %>% group_by(Name, `Gene symbol`, Class, Subclass, `Element type`) %>% count() %>% distinct() %>% ungroup() %>% group_by(`Gene symbol`, Class, Subclass, `Element type`) %>% count() %>% arrange(-n) %>% mutate(freq=n/denom)
+
+write_tsv(gene_counts, file="PA_gene_freq.tsv")
+
+dim(gene_counts)
+
+# AMR markers with per-species frequency >90% (candidate core genes)
+gene_counts %>% filter(freq>0.9 & `Element type`=="AMR")
+
+# plot AMR markers with per-species frequency >90% (candidate core genes)
+gene_counts %>% filter(freq>0.9 & `Element type`=="AMR") %>%
+  ggplot(aes(y=`Gene symbol`, x=freq)) + geom_col(position='dodge')
+
+ggsave(width=5, height=5, file="PA_candidate_coreGenes.pdf")
+```
+
+# check for core genes - nodes
+``` {r}
+
+# gene frequency per species
+node_counts <- afp %>% group_by(Name, `Gene symbol`, Class, Subclass, `Element type`, `Hierarchy node`) %>% count() %>% distinct() %>% ungroup() %>% group_by(`Gene symbol`, Class, Subclass, `Element type`, `Hierarchy node`) %>% count() %>% arrange(-n) %>% mutate(freq=n/denom)
+
+write_tsv(node_counts, file="PA_node_freq.tsv")
+
+# AMR markers with per-species frequency >90% (candidate core genes)
+node_counts %>% filter(freq>0.9 & `Element type`=="AMR")
+
+# plot AMR markers with per-species frequency >90% (candidate core genes)
+node_counts %>% filter(freq>0.9 & `Element type`=="AMR") %>%
+  ggplot(aes(y=`Hierarchy node`, x=freq)) + geom_col(position='dodge')
+
+ggsave(width=5, height=5, file="PA_candidate_coreGenes_node.pdf")
+
+# check if any other nodes associated with 'Gene symbol' of core genes
+node_counts %>% filter(`Gene symbol` %in% (node_counts %>% filter(freq>0.5 & `Element type`=="AMR") %>% pull(`Gene symbol`)))
+
+# check accessions associated with 'Gene symbol' of core genes
+afp_core <- afp %>% filter(`Gene symbol` %in% (node_counts %>% filter(freq>0.5 & `Element type`=="AMR") %>% pull(`Gene symbol`))) 
+
+```
+
+# boxplot of identity of core gene hits, stratified by accession
+``` {r}
+core_id_plot <- afp_core %>% 
+  mutate(label=paste(`Gene symbol`, `Accession of closest sequence`)) %>% 
+  ggplot(aes(x=label, y=`% Identity to reference sequence`)) + geom_boxplot() + coord_flip()
+
+core_id_plot
+
+ggsave(width=5, height=5, file="PA_coreGene_identity.pdf")
+
+afp_core %>% filter(`Gene symbol`=="catB7") %>% pull(`% Identity to reference sequence`) %>% median()
+
+afp_core %>% filter(`Gene symbol`=="aph(3')-IIb") %>% group_by(`Accession of closest sequence`, `Hierarchy node`) %>% count()
+
+```
+
+# how are blaPDC, blaOXA-50 being called
+``` {r}
+afp %>% filter(grepl("blaPDC",`Gene symbol`)) %>% select(Name) %>% unique() %>% nrow()
+
+blapdc_alleles <- afp %>% filter(grepl("blaPDC",`Gene symbol`)) %>% group_by(`Gene symbol`, `Hierarchy node`, Subclass) %>% count() %>% arrange(-n)
+
+nrow(blapdc_alleles)
+blapdc_alleles %>% group_by(Subclass) %>% count()
+
+afp %>% filter(grepl("blaOXA",`Gene symbol`)) %>% select(Name) %>% unique() %>% nrow()
+
+blaoxa_alleles <- afp %>% filter(grepl("blaOXA",`Gene symbol`)) %>% group_by(`Gene symbol`, `Hierarchy node`, Subclass) %>% count() %>% arrange(-n)
+
+nrow(blaoxa_alleles)
+blaoxa_alleles %>% group_by(Subclass) %>% count()
+
+# identify parent nodes for OXA genes
+hierarchy <- read_tsv("ReferenceGeneHierarchy.txt")
+hierarchy %>% filter(node_id %in% blaoxa_alleles$`Gene symbol`) %>% group_by(parent_node_id) %>% count()
+
+blaoxa_alleles %>% left_join(hierarchy, join_by("Hierarchy node"=="node_id"))  %>% view() %>% group_by(parent_node_id) %>% summarise(n=sum(n))
+
+# tabulate blaOXA hit combinations
+afp %>% filter(grepl("blaOXA",`Hierarchy node`)) %>% left_join(hierarchy, join_by("Hierarchy node"=="node_id")) %>% select(Name, parent_node_id) %>% pivot_wider(names_from="parent_node_id", values_from = "parent_node_id", values_fn=max) %>% group_by(`blaOXA-50_fam`,`blaOXA-10_fam`, `blaOXA`) %>% count()
+
+# shows blaOXA hits are mostly in genomes without hits to blaOXA-50_fam
+# blaOXA-10 family hits are in addition to blaOXA-50_fam
+# so, we need to 
+```
+
+
+# read AST data - from NCBI
+```{r }
+
+ast<-read_delim("AST_Pseudomonas_aeruginosa.tsv.gz") %>% rename(BioSample=`#BioSample`)
+
+length(unique(ast$BioSample))
+
+ast %>% group_by(BioSample) %>% summarise(n=length(unique((Antibiotic))))%>% pull(n) %>% summary()
+
+```
+
+# interpret missing MIC
+
+``` {r}
+# 462 lines from 59 isolates with MIC data and no interpretation - try to process these
+ast %>% filter(!is.na(`MIC (mg/L)`) & `Resistance phenotype`=="not defined") %>% nrow()
+ast %>% filter(!is.na(`MIC (mg/L)`) & `Resistance phenotype`=="not defined") %>% select(BioSample) %>% unique() %>% nrow()
+
+mic_to_define <- ast %>% filter(!is.na(`MIC (mg/L)`) & `Resistance phenotype`=="not defined")
+the_rest <- ast %>% filter(is.na(`MIC (mg/L)`) | `Resistance phenotype`!="not defined")
+
+mic_interpreted <- mic_to_define %>%
+  mutate(mic=paste0(`Measurement sign`, `MIC (mg/L)`)) %>% 
+  select(BioSample, Antibiotic, mic) %>%
+  pivot_wider(names_from=Antibiotic, values_from = mic) %>%
+  mutate(across(ampicillin:moxifloxacin, as.mic)) %>% # set class MIC
+  set_ab_names(where(is.mic), property = "name") %>% # set class antibiotic
+  mutate(across(where(is.mic), as.sir, mo="Pseudomonas aeruginosa")) %>%
+  pivot_longer(!BioSample, names_to="Antibiotic", values_to = "Resistance phenotype") %>%
+  mutate(case_when(`Resistance phenotype` =="S" ~ "susceptible",
+                   `Resistance phenotype` =="I" ~ "intermediate", 
+                   `Resistance phenotype` =="R" ~ "resistant",
+                   TRUE ~NA))
+
+ast <- left_join(mic_to_define %>% select(-`Resistance phenotype`), mic_interpreted) %>% bind_rows(the_rest)
+
+```
+
+
+# get AMRfinderplus and AST data where both are available
+``` {r}
+sum(unique(ast$BioSample) %in% afp$Name)
+
+species_calls %>% filter(Sample %in% unique(ast$BioSample) [!(unique(ast$BioSample) %in% afp$Name)])
+
+# AST data for strains with AMRfinder results
+ast_matched <- ast %>% filter(BioSample %in% afp$Name)
+
+# AMRfinder results, for strains with matching AST data from NCBI
+afp_matched <- afp %>% filter(Name %in% ast$BioSample)
+
+# check objects
+dim(ast_matched)
+ast_matched %>% pull(BioSample) %>% unique() %>% length()
+
+dim(afp_matched)
+afp_matched %>% pull(Name) %>% unique() %>% length()
+```
+
+# available AST data on expected resistances, in strains with genotypes
+``` {r}
+
+#auto list of expected resistances - from AMR package
+
+exp_res_drug_codes <- intrinsic_resistant %>% filter(mo == (microorganisms %>% filter(genus=="Pseudomonas" & species=="aeruginosa") %>% pull(mo))) %>% pull(ab)
+
+exp_res_drug_names <- antibiotics %>% filter(ab %in% exp_res_drug_codes) %>% pull(name) %>% tolower()
+
+exp_res_ast <- ast_matched %>% filter(Antibiotic %in% exp_res_drug_names) %>% 
+  filter(`Resistance phenotype` %in% c("intermediate", "resistant", "susceptible")) %>% group_by(Antibiotic, `Resistance phenotype`) %>% tally() %>% mutate(pc=n/sum(n))
+
+# only cefazolin & ceftriaxone have AST+AMRFP data on N>3, both support resistance
+# associated with blPDC which is not called by AMRFP anyway
+exp_res_ast %>% ggplot(aes(y=Antibiotic, x=n, fill=`Resistance phenotype`)) + geom_bar(stat="identity", position="fill") + geom_text(aes(label=paste0(n, " (",sprintf("%1.1f", pc*100),"%)")),position=position_fill(vjust=0.5))
+
+ggsave(width=5, height=5, file="PA_expectedRes_ASTdata.pdf")
+```
+
+# isolates lacking bla/mex genes?
+``` {r}
+blaPDC_pos <- afp %>% filter(grepl("blaPDC",`Gene symbol`)) %>% pull(Name)
+blaOXA_pos <- afp %>% filter(grepl("blaOXA",`Gene symbol`)) %>% pull(Name)
+
+mexA_pos <- afp %>% filter(`Gene symbol`=="mexA") %>% pull(Name)
+mexE_pos <- afp %>% filter(`Gene symbol`=="mexE") %>% pull(Name)
+mexX_pos <- afp %>% filter(`Gene symbol`=="mexX") %>% pull(Name)
+
+# no isolates lacking blaPDC or OXA have any AST data
+ast_matched %>% filter(!(BioSample %in% blaPDC_pos))
+ast_matched %>% filter(!(BioSample %in% blaOXA_pos))
+ast_matched %>% filter(!(BioSample %in% mexA_pos))
+ast_matched %>% filter(!(BioSample %in% mexE_pos))
+
+# 11 isolates lacking mexX have AST data
+ast_matched %>% filter(!(BioSample %in% mexX_pos))
+ast_matched %>% filter(!(BioSample %in% mexX_pos)) %>% group_by(Antibiotic,`Resistance phenotype`) %>% count()
+```
+
+# drugs with wt S/I associated with core gene classes
+``` {r}
+d <- c("piperacillin","piperacillin-tazobactam","ceftazidime","cefepime", "ciprofloxacin","aztreonam", "ceftolozane-tazobactam", "ceftazidime-avibactam","meropenem", "cefepime", "aztreonam", "tobramycin", "amikacin", "fosfomycin")
+
+pa_ast <- ast_matched %>% filter(Antibiotic %in% d) %>% 
+  filter(`Resistance phenotype` %in% c("intermediate", "resistant", "susceptible")) %>% group_by(Antibiotic, `Resistance phenotype`) %>% tally() %>% mutate(pc=n/sum(n))
+
+pheno_plot <- pa_ast %>% 
+  mutate(`Resistance phenotype`=fct_relevel(`Resistance phenotype`, "susceptible", "intermediate", "resistant")) %>%
+  ggplot(aes(y=Antibiotic, x=n, fill=`Resistance phenotype`)) +
+  geom_bar(stat="identity", position="fill") + 
+  geom_text(aes(label=paste0(n, " (",sprintf("%1.1f", pc*100),"%)")), 
+            position=position_fill(vjust=0.5), size=3) +
+  scale_fill_manual(values=c("resistant"="IndianRed", "intermediate"="orange", "susceptible"="lightgrey"))
+
+pheno_plot
+
+ggsave(width=10, height=5, file="PA_ASTdata.pdf")
+```
+
+``` {r, eval=F}
+
+test_list <- rbind(c("piperacillin", NA, "BETA-LACTAM"),
+                   #c("piperacillin-tazobactam", NA, "TAZOBACTAM"),
+                   #c("ceftazidime-avibactam", NA, "AVIBACTAM"),
+                   #c("ceftolozane-tazobactam", NA, "TAZOBACTAM"),
+                   #c("aztreonam", NA, "AZTREONAM"),
+                   c("ceftazidime", NA, "CEPHALOSPORIN"),
+                  # c("ceftazidime-avibactam", NA, "CEPHALOSPORIN"),
+                   #c("ceftazidime-avibactam", NA, "AVIBACTAM"),
+                   #c("ceftolozane-tazobactam", NA, "TAZOBACTAM"),
+                   #c("ceftolozane-tazobactam", NA, "CEPHALOSPORIN"),
+                   c("cefepime", NA, "CEPHALOSPORIN"),
+                   c("ceftazidime", "BETA-LACTAM", NA),
+                   c("cefepime", "BETA-LACTAM", NA),
+                   c("imipenem", NA, "CARBAPENEM"),
+                   c("meropenem", NA, "CARBAPENEM"),
+                   c("amikacin", "AMINOGLYCOSIDE", NA),
+                   c("amikacin", NA, "AMIKACIN"),
+                   c("tobramycin", "AMINOGLYCOSIDE", NA),
+                   c("tobramycin", NA, "TOBRAMYCIN"),
+                   c("ciprofloxacin", "QUINOLONE", NA), 
+                   c("colistin", NA, "COLISTIN"),
+                   c("fosfomycin", NA, "FOSFOMYCIN"),
+                   c("trimethoprim", "TRIMETHOPRIM", NA),
+                   c("trimethoprim-sulfamethoxazole", "TRIMETHOPRIM", NA),
+                   c("trimethoprim-sulfamethoxazole", "SULFONAMIDE", NA),
+                   c("sulfamethoxazole", "SULFONAMIDE", NA),
+                   c("sulfisoxazole", "SULFONAMIDE", NA),
+                   c("tetracycline", "TETRACYCLINE", NA)
+                  # c("tigecycline", NA, "TIGECYCLINE")
+                   )
+
+test_stats <- getPPV(ast_matched = ast_matched, afp_matched=afp_matched, test_list=test_list, outdir="PA_PPV/")
+
+write_tsv(test_stats, "PA_PPV/SoloPPV.tsv")
+```
+
+
+# crpP in cip & levo?
+``` {r}
+cip_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched = afp_matched, antibiotic = "ciprofloxacin", refgene_subclass = c("PHENICOL/QUINOLONE", "QUINOLONE"), maf=5)
+
+cip_model <- logistf(resistant ~ ., data=cip_binary)
+
+cip_logreg <- logreg_details(cip_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+cip_logreg
+
+```
+
+``` {r}
+levo_binary <- getBinMatrix(ast_matched = ast_matched, afp_matched = afp_matched, antibiotic = "levofloxacin", refgene_subclass = c("PHENICOL/QUINOLONE", "QUINOLONE"), maf=5)
+
+levo_model <- logistf(resistant ~ ., data=levo_binary)
+
+levo_logreg <- logreg_details(levo_model) %>% 
+  mutate(sig=if_else(pval<0.05, TRUE, FALSE)) %>%
+  filter(marker != "(Intercept)") %>%
+  mutate(marker=gsub("`","",marker)) %>%
+  ggplot(aes(y=marker, col=sig)) + 
+  geom_vline(xintercept=0) + 
+  geom_linerange(aes(xmin=ci.lower, xmax=ci.upper)) + 
+  geom_point(aes(x=est)) + 
+  scale_color_manual(values=c("grey", "black")) + 
+  theme_light() + labs(x="Logist regression coefficient (95% CI)", col="p<0.05")
+
+levo_logreg
+
+```
+
+
+``` {r}
+levo_binary  %>% group_by(resistant, crpP) %>% count()
+table(levo_binary$resistant, levo_binary$crpP)
+
+cip_binary  %>% group_by(resistant, crpP) %>% count()
+table(cip_binary$resistant, cip_binary$crpP)
+```
+
+``` {r}
+(cip_logreg + ggtitle("ciprofloxacin") )/ (levo_logreg + ggtitle("levofloxacin"))
+
+ggsave(width=6, height=5, file="PA_quinolones.pdf")
+```
+
+# upset plots
+``` {r}
+
+levo_binary_mic <- getBinMatMIC(ast_matched = ast_matched, afp_matched = afp_matched, antibiotic = "levofloxacin", refgene_subclass = c("QUINOLONE"))
+
+upset_levo <- levo_binary_mic %>% 
+  filter(!is.na(`MIC (mg/L)`)) %>%
+  upset(
+      intersect=c(colnames(levo_binary_mic)[1:16]),  # counts are converted to binary
+      min_size=2,
+      set_sizes=F,
+      sort_intersections_by='degree',
+      annotations= list( # add violin plot with MIC data
+        'MIC (mg/L)'=(
+            ggplot(mapping=aes(y=as.numeric(`MIC (mg/L)`))) +
+              geom_hline(aes(yintercept = 2), linetype = 1, alpha = 0.6, color = "black")  +
+              geom_violin()+ 
+              #geom_count(aes(colour = SRnwt))+
+              geom_count() +
+              # scale_color_manual(values = res_colours)+
+              scale_y_continuous(trans = log2_trans(), breaks = 2^(-5:6), labels = function(x) round(as.numeric(x), digits = 3), limits=c(2^-5,2^6)) +
+              labs(colour = "resistant") +
+              theme(legend.position="none") + 
+              ggtitle("Levofloxacin MIC")
+        )
+      )
+    ) + patchwork::plot_layout(heights=c(3,1)) # relative heights of plotting areas
+
+``` 
+
+``` {r}
+upset_levo
+
+ggsave(width=6, height=5, file="PA_levo_MIC_upset.pdf")
+
+
+
+fq_solo_strains <- afp_matched %>% filter(grepl("QUINOLONE", Subclass)) %>% 
+    group_by(Name) %>% count() %>% filter(n==1) %>% pull(Name)
+
+afp_matched %>% filter(`Gene symbol` =="crpP") %>% 
+    filter(Name %in% fq_solo_strains) %>% 
+    left_join(ast_matched %>% filter(Antibiotic=="levofloxacin"), join_by("Name"=="BioSample")) %>% 
+  pull(`MIC (mg/L)`) %>% median(na.rm=T)
+```
+
+``` {r}
+
+cipro_binary_mic <- getBinMatMIC(ast_matched = ast_matched, afp_matched = afp_matched, antibiotic = "ciprofloxacin", refgene_subclass = c("QUINOLONE")) 
+
+upset_cip <- cipro_binary_mic  %>% 
+  filter(!is.na(`MIC (mg/L)`)) %>% 
+  upset(
+      intersect=c(colnames(cipro_binary_mic)[1:15]),  # counts are converted to binary
+      min_size=2,set_sizes=F,
+      sort_intersections_by='degree',
+      annotations= list( # add violin plot with MIC data
+        'MIC (mg/L)'=(
+            ggplot(mapping=aes(y=as.numeric(`MIC (mg/L)`))) +
+              geom_hline(aes(yintercept = 0.5), linetype = 1, alpha = 0.6, color = "black")  +
+              geom_violin()+ 
+              #geom_count(aes(colour = SRnwt))+
+              geom_count() +
+              # scale_color_manual(values = res_colours)+
+              scale_y_continuous(trans = log2_trans(), breaks = 2^(-5:6), labels = function(x) round(as.numeric(x), digits = 3), limits=c(2^-5,2^6)) +
+              labs(colour = "resistant") +
+              theme(legend.position="none") + 
+              ggtitle("Ciprofloxacin MIC")
+        )
+      )
+    ) + patchwork::plot_layout(heights=c(3,1)) # relative heights of plotting areas
+
+``` 
+
+``` {r}
+upset_cip
+
+ggsave(width=6, height=5, file="PA_cipro_MIC_upset.pdf")
+
+
+afp_matched %>% filter(`Gene symbol` =="crpP") %>% 
+    filter(Name %in% fq_solo_strains) %>% 
+    left_join(ast_matched %>% filter(Antibiotic=="ciprofloxacin"), join_by("Name"=="BioSample")) %>% 
+  pull(`MIC (mg/L)`) %>% median(na.rm=T)
+
+```
+
+

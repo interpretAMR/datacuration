@@ -78,3 +78,26 @@ write_tsv(pseudomonas_AFP, file="ATB_Pseudomonas_aeruginosa_AFP.tsv")
 dim(pseudomonas_AFP)
 length(unique(pseudomonas_AFP$Name))
 ```
+
+# enterobacter
+
+```{r }
+# get data for whole genus
+enterobacter_genus <- species_calls %>% filter(grepl("Enterobacter",Species)) 
+```
+
+``` {r}
+f <- function(x, pos) subset(x, Name %in% enterobacter_genus$Sample)
+
+enterobacter_AFP <- read_tsv_chunked("/Users/ipmbkhot/Library/CloudStorage/GoogleDrive-drkatholt@gmail.com/My Drive/AMRnet/resistance rules/AMRFP_results.tsv.gz", DataFrameCallback$new(f), chunk_size = 10000)
+
+```
+
+``` {r}
+# write out with species annotated
+enterobacter_AFP %>% full_join(enterobacter_genus, by=join_by("Name"=="Sample")) %>% write_tsv(file="ATB_Enterobacter_AFP.tsv")
+
+dim(enterobacter_AFP)
+length(unique(enterobacter_AFP$Name))
+enterobacter_genus %>% group_by(Species) %>% count() %>% arrange(-n)
+```

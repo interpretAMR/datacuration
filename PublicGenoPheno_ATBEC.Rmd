@@ -13,6 +13,7 @@ knitr::opts_knit$set(root.dir = getwd())
 library(tidyverse)
 library(dplyr)
 library(patchwork)
+library(readxl)
 
 source("functions.R")
 ```
@@ -28,14 +29,81 @@ ast %>% group_by(BioSample) %>% summarise(n=length(unique((Antibiotic))))%>% pul
 
 ```
 
+# read AST data - from BSAC paper
+```{r }
+
+# matrix, one row per strain
+# Moradigaravand 2018, https://doi.org/10.1371/journal.pcbi.1006258
+# AST in Table S1, parsed to add BioSample via ENA
+bsac<-read_delim("BSAC_AST.txt")
+
+dim(bsac)
+
+# check if data was in NCBI already (no)
+sum(bsac$BioSample %in% ast$BioSample)
+
+ast_bsac <- bsac %>% select(BioSample,CTZ:CIP) %>%
+  rename(amoxicillin=AMX,
+         `amoxicillin-clavulanate`=AMC,
+         ampicillin=AMP, 
+         cephalothin=CET, 
+         ceftriaxone=CTX, 
+         ceftazidime=CTZ,
+         cefuroxime=CXM,
+         ciprofloxacin=CIP,
+         gentamicin=GEN, 
+         `piperacillin-tazobactam`=TZP, 
+         trimethoprim=TMP,
+         tobramycin=TBM
+         ) %>%
+  pivot_longer(!BioSample, names_to="Antibiotic", values_to = "SIR") %>%
+  mutate(`Resistance phenotype`=case_when(
+    SIR=="S" ~ "susceptible",
+    SIR=="R" ~ "resistant",
+    SIR=="I" ~ "resistant",
+    TRUE ~ NA
+  )) %>% select(-SIR)
+
+# add to AST data list
+ast <- ast %>% select(BioSample, Antibiotic, `Resistance phenotype`) %>% bind_rows(ast_bsac)
+```
+
+# read AST data - from Mills paper
+```{r }
+
+# matrix, one row per strain
+# Mills 2022, https://doi.org/10.1186/s13073-022-01150-7
+# AST in Table S2, parsed to add BioSample via ENA
+mills<-read_excel("Mills_AST.xlsx")
+
+dim(mills)
+
+# check if data was in NCBI already (yes)
+sum(mills$BioSample %in% ast$BioSample)
+
+ast_mills <- mills %>% select(BioSample,ends_with("call")) %>%
+  pivot_longer(!BioSample, names_to="Antibiotic", values_to = "SIR") %>%
+  mutate(`Resistance phenotype`=case_when(
+    SIR=="S" ~ "susceptible",
+    SIR=="R" ~ "resistant",
+    SIR=="I" ~ "resistant",
+    TRUE ~ NA
+  )) %>% select(-SIR) %>%
+  mutate(Antibiotic=gsub(" call", "", Antibiotic)) %>%
+  mutate(Antibiotic=tolower(Antibiotic))
+
+# compare with NCBI calls
+ast_mills %>% left_join(ast, by=c("BioSample", "Antibiotic")) %>% group_by(`Resistance phenotype.x`,`Resistance phenotype.y`) %>% count()
+
+ast_pub <- bind_rows(ast_mills, ast_bsac)
+```
+
+
 # read ATB AMRfinderplus calls
 ```{r }
 
 afp <-read_tsv("ATB_Ecoli_AFP.tsv.gz")
 gene_counts <- afp %>% group_by(`Gene symbol`, Class, Subclass) %>% count()
-
-species_calls <- read_tsv("species_calls.tsv.gz")
-ecoli <- species_calls %>% filter(Species=="Escherichia coli") %>% pull(Sample)
 
 afp_status <- read_tsv("AMRFP_status.tsv.gz") %>% filter(sample %in% ecoli)
 denominator <- afp_status %>% filter(status=="PASS") %>% nrow()
