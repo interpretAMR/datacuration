@@ -14,14 +14,14 @@ library(tidyverse)
 library(dplyr)
 library(patchwork)
 
-source("functions.R")
+source("../functions.R")
 ```
 
 
 # read ATB AMRfinderplus calls - filter to high quality
 ```{r }
 
-afp <-read_tsv("ATB_Enterobacter_AFP.tsv.gz") %>% filter(HQ)
+afp <-read_tsv("../AllTheBacteria/ATB_Enterobacter_AFP.tsv.gz") %>% filter(HQ)
 denominator <- afp %>% nrow()
 
 ```
@@ -52,7 +52,7 @@ ggsave(width=10, height=10, file="Enterobacter_candidate_coreGenes.pdf")
 # read AST data - from NCBI
 ```{r }
 
-ast<-read_delim("Enterobacter_AST.tsv.gz") %>% rename(BioSample=`#BioSample`)
+ast<-read_delim("../AST/AST_Enterobacter.tsv.gz") %>% rename(BioSample=`#BioSample`)
 
 length(unique(ast$BioSample))
 
@@ -90,13 +90,12 @@ ast_eh <- ast_matched %>% filter(BioSample %in% afp_eh$Name)
 
 # solo markers for ciprofloxacin
 ``` {r}
-
-cip_quinolone <- solo_marker_atb(ast_matched = ast_eh, afp_matched=afp_eh %>% filter(`Gene symbol`!="oqxB"), antibiotic = "ciprofloxacin", refgene_subclass = c("PHENICOL/QUINOLONE", "QUINOLONE"))
+cip_quinolone <- solo_marker_atb(ast_matched = ast_eh, afp_matched=afp_eh %>% filter(`Gene symbol`!="oqxB"), antibiotic = "ciprofloxacin", refgene_class = "QUINOLONE")
 
 cip_quinolone$solo_stats
 
 # excluding oqxAB as this is core
-cip_quinolone_noOqx <- solo_marker_atb(ast_matched = ast_eh, afp_matched=afp_eh %>% filter(!(`Gene symbol` %in% c("oqxB", "oqxA"))), antibiotic = "ciprofloxacin", refgene_subclass = c("PHENICOL/QUINOLONE", "QUINOLONE"))
+cip_quinolone_noOqx <- solo_marker_atb(ast_matched = ast_eh, afp_matched=afp_eh %>% filter(!(`Gene symbol` %in% c("oqxB", "oqxA"))), antibiotic = "ciprofloxacin", refgene_class ="QUINOLONE")
 
 cip_quinolone_noOqx$solo_stats
 cip_quinolone_noOqx$combined_plot
@@ -104,7 +103,7 @@ cip_quinolone_noOqx$combined_plot
 ```
 
 ``` {r}
-cip_binary <- getBinMatrix(ast_matched = ast_eh, afp_matched = afp_eh %>% filter(!(`Gene symbol` %in% c("oqxB", "oqxA"))), antibiotic = "ciprofloxacin", refgene_subclass = c("PHENICOL/QUINOLONE", "QUINOLONE"), maf=5)
+cip_binary <- getBinMatrix(ast_matched = ast_eh, afp_matched = afp_eh %>% filter(!(`Gene symbol` %in% c("oqxB", "oqxA"))), antibiotic = "ciprofloxacin", refgene_class = "QUINOLONE", maf=5)
 
 cip_model <- logistf(resistant ~ ., data=cip_binary)
 
