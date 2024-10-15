@@ -16,8 +16,8 @@ R code with examples using public NCBI AST data, and AllTheBacteria AMRfinderplu
 `/AST`
 
 * `Ecoli_AST.tsv.gz` - public AST data downloaded from [NCBI AST](https://www.ncbi.nlm.nih.gov/pathogens/ast#scientific_name:Escherichia%20coli) (9094 unique biosamples with AST data on at least one drug (median 15 drugs, IQR 14-18 drugs)) (<2 MB)
-* `AST_Enterobacter.tsv.gz`
-* `AST_Pseudomonas_aeruginosa.tsv.gz`
+* `AST_Enterobacter.tsv.gz` (221 unique biosamples with AST data on at least one drug (median 21 drugs, IQR 15-26 drugs) (<100 KB)
+* `AST_Pseudomonas_aeruginosa.tsv.gz` (607 unique biosamples with AST data on at least one drug (median 1 drugs, IQR 6-14 drugs) (<100 KB)
 
 ### NCBI refgenes DB
 * `refgenes_20241003.tsv` - Local download of NCBI [refgene DB](https://www.ncbi.nlm.nih.gov/pathogens/refgene/) of AMR determinants (<2 MB)
@@ -36,8 +36,8 @@ This repo contains files with the AMRfinderplus output extracted for selected sp
 
 * _Escherichia coli_: `ATB_Ecoli_AFP.tsv.gz` - 9,179,705 lines for 314,978 unique genomes (43 MB)
 * _Salmonella enterica_: `ATB_Salmonella_AFP.tsv.gz` - 6,133,567 lines for 534,667 unique genomes (26 MB)
-* _Pseudomonas aeruginosa_: `ATB_Pseudomonas_aeruginosa_AFP.tsv.gz` - 389,574 lines for 25,057 unique genomes (7.6 MB)
-* _Enterobacter_: `ATB_Enterobacter_AFP.tsv.gz` (7.4 MB)
+* _Pseudomonas aeruginosa_: `ATB_Pseudomonas_aeruginosa_AFP.tsv.gz` - 389,574 lines for 24,854 unique genomes (7.6 MB)
+* _Enterobacter_: `ATB_Enterobacter_AFP.tsv.gz` - 332,099 lines for 9,465 unique genomes (7.4 MB) 
   
 The script `ATB.Rmd` shows how we used R to pull out AMRfinderplus results for genomes belonging to a particular species, which can be used to extract data for other species, like this:
 
