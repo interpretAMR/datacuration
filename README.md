@@ -1,6 +1,13 @@
-# AMRrulesR
+# AMRrules data curation
 
 This repo will be a space for sharing R code to process & analyse matched AMR genotype & phenotype data, to support the ESGEM-AMR working groups to [develop AMRrules](https://github.com/interpretAMR/AMRrulesCuration) for the interpretation of AMR genotype data in terms of expected phenotypes.
+
+## Example code
+
+R code with examples using public NCBI AST data, and AllTheBacteria AMRfinderplus results, to explore core genes and the association of AMR genotypes with phenotypes.
+
+* `Enterobacter/Enterobacter.Rmd` (output in `Enterobacter/Enterobacter.html`)
+* `Pseudomonas/Pseudomonas_aeruginosa.Rmd` (output in `Pseudomonas/Pseudomonas_aeruginosa.html`)
 
 ## Data files
 
@@ -47,3 +54,5 @@ ecoli_AFP <- read_tsv_chunked("AMRFP_results.tsv.gz", DataFrameCallback$new(f), 
 ecoli_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>%
   write_tsv(file="ATB_Ecoli_AFP.tsv.gz")
 ```
+
+
