@@ -22,8 +22,11 @@ source("../functions.R")
 ```{r }
 
 afp <-read_tsv("../AllTheBacteria/ATB_Enterobacter_AFP.tsv.gz") %>% filter(HQ)
-denominator <- afp %>% nrow()
+denominator <- afp %>% select(Name) %>% unique() %>% nrow()
 
+dim(afp)
+
+denominator
 ```
 
 # check for core genes
