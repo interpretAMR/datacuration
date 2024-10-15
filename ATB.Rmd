@@ -1,5 +1,5 @@
 ---
-title: "ATB AMRFP"
+title: "Extract AMRfinderplus results for a species of interest"
 output: html_document
 date: "2024-10-03"
 ---
@@ -12,15 +12,17 @@ knitr::opts_knit$set(root.dir = getwd())
 # Data wrangling
 library(tidyverse)
 library(dplyr)
-library(reshape2)
-library(ComplexUpset)
-library(patchwork)
 
 ```
 
-# species calls
+# set path to file of AMRFinderPlus from AllTheBacteria, downlaoded from https://osf.io/zgexh (0.5GB)
 ``` {r}
-species_calls <- read_tsv("species_calls.tsv.gz")
+ATB_amrfp <- "AMRFP_results.tsv.gz"
+```
+
+# species calls from All The Bacteria
+``` {r}
+species_calls <- read_tsv("AllTheBacteria/ATB_species_calls.tsv.gz")
 ```
 
 # ecoli
@@ -32,12 +34,11 @@ ecoli <- species_calls %>% filter(Species=="Escherichia coli") %>% pull(Sample)
 ``` {r}
 f <- function(x, pos) subset(x, Name %in% ecoli)
 
-ecoli_AFP <- read_tsv_chunked("AMRFP_results.tsv.gz", DataFrameCallback$new(f), chunk_size = 10000)
-
-# write.csv(ecoli_AFP, file="ATB_Ecoli_AFP.csv")
+ecoli_AFP <- read_tsv_chunked(ATB_amrfp, DataFrameCallback$new(f), chunk_size = 10000)
 
 # select columns to make file shareable in github
-ecoli_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>% write_tsv(file="ATB_Ecoli_AFP.tsv")
+ecoli_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>% 
+  write_tsv(file="AllTheBacteria/ATB_Ecoli_AFP.tsv.gz")
 
 dim(ecoli_AFP)
 length(unique(ecoli_AFP$Name))
@@ -52,10 +53,11 @@ salmonella <- species_calls %>% filter(Species=="Salmonella enterica") %>% pull(
 ``` {r}
 f <- function(x, pos) subset(x, Name %in% salmonella)
 
-salmonella_AFP <- read_tsv_chunked("AMRFP_results.tsv.gz", DataFrameCallback$new(f), chunk_size = 10000)
+salmonella_AFP <- read_tsv_chunked(ATB_amrfp, DataFrameCallback$new(f), chunk_size = 10000)
 
 # select columns to make file shareable in github
-salmonella_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>% write_tsv(file="ATB_Salmonella_AFP.tsv")
+salmonella_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>% 
+  write_tsv(file="AllTheBacteria/ATB_Salmonella_AFP.tsv.gz")
 
 dim(salmonella_AFP)
 length(unique(salmonella_AFP$Name))
@@ -64,16 +66,16 @@ length(unique(salmonella_AFP$Name))
 # pseudomonas
 
 ```{r }
-pseudomonas <- read_delim("~/Downloads/species_calls_Pseudomonas_aeruginosa_ID.txt", delim="\t", col_names="id") %>% pull(id)
+pseudomonas <- species_calls %>% filter(Species=="Pseudomonas aeruginosa") %>% pull(Sample)
 
 ```
 
 ``` {r}
 f <- function(x, pos) subset(x, Name %in% pseudomonas)
 
-pseudomonas_AFP <- read_tsv_chunked("~/Downloads/AMRFP_results.tsv", DataFrameCallback$new(f), chunk_size = 10000)
+pseudomonas_AFP <- read_tsv_chunked(ATB_amrfp, DataFrameCallback$new(f), chunk_size = 10000)
 
-write_tsv(pseudomonas_AFP, file="ATB_Pseudomonas_aeruginosa_AFP.tsv")
+write_tsv(pseudomonas_AFP, file="AllTheBacteria/ATB_Pseudomonas_aeruginosa_AFP.tsv.gz")
 
 dim(pseudomonas_AFP)
 length(unique(pseudomonas_AFP$Name))
@@ -89,13 +91,13 @@ enterobacter_genus <- species_calls %>% filter(grepl("Enterobacter",Species))
 ``` {r}
 f <- function(x, pos) subset(x, Name %in% enterobacter_genus$Sample)
 
-enterobacter_AFP <- read_tsv_chunked("/Users/ipmbkhot/Library/CloudStorage/GoogleDrive-drkatholt@gmail.com/My Drive/AMRnet/resistance rules/AMRFP_results.tsv.gz", DataFrameCallback$new(f), chunk_size = 10000)
+enterobacter_AFP <- read_tsv_chunked(ATB_amrfp, DataFrameCallback$new(f), chunk_size = 10000)
 
 ```
 
 ``` {r}
 # write out with species annotated
-enterobacter_AFP %>% full_join(enterobacter_genus, by=join_by("Name"=="Sample")) %>% write_tsv(file="ATB_Enterobacter_AFP.tsv")
+enterobacter_AFP %>% full_join(enterobacter_genus, by=join_by("Name"=="Sample")) %>% write_tsv(file="ATB_Enterobacter_AFP.tsv.gz")
 
 dim(enterobacter_AFP)
 length(unique(enterobacter_AFP$Name))
