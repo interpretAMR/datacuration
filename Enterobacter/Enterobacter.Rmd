@@ -13,6 +13,7 @@ knitr::opts_knit$set(root.dir = getwd())
 library(tidyverse)
 library(dplyr)
 library(patchwork)
+library(AMR)
 
 source("../functions.R")
 ```
@@ -22,11 +23,28 @@ source("../functions.R")
 ```{r }
 
 afp <-read_tsv("../AllTheBacteria/ATB_Enterobacter_AFP.tsv.gz") %>% filter(HQ)
+
 denominator <- afp %>% select(Name) %>% unique() %>% nrow()
 
 dim(afp)
 
 denominator
+
+
+enterobacter_complexes <- microorganisms.groups %>% filter(grepl("Enterobacter ", mo_name))
+
+# one complex described - "Enterobacter cloacae complex"
+table(enterobacter_complexes$mo_group_name)
+
+# member species
+enterobacter_complexes$mo_name
+
+enterobacter_complexes <- enterobacter_complexes %>% 
+  rename(complex=mo_group_name, Species=mo_name) %>% 
+  select(complex, Species)
+
+# add complex 
+afp <- left_join(afp, enterobacter_complexes)
 ```
 
 # check for core genes
@@ -35,18 +53,102 @@ denominator
 # gene frequency per species
 species_count <- afp %>% group_by(Name, Species) %>% count() %>% distinct() %>% ungroup() %>% group_by(Species) %>% summarise(nspp=n()) %>% arrange(-nspp)
 
-gene_counts <- afp %>% group_by(Name, `Gene symbol`, Class, Subclass, Species, `Element type`) %>% count() %>% distinct() %>% ungroup() %>% group_by(`Gene symbol`, Class, Subclass, Species, `Element type`) %>% count() %>% left_join(species_count, by="Species") %>% mutate(freq=n/nspp)
+gene_counts <- afp %>% group_by(Name, `Gene symbol`, Class, Subclass, Species, complex, `Element type`) %>% count() %>% distinct() %>% ungroup() %>% group_by(`Gene symbol`, Class, Subclass, Species, complex, `Element type`) %>% count() %>% left_join(species_count, by="Species") %>% mutate(freq=n/nspp)
 
 write_tsv(gene_counts, file="Enterobacter_gene_freq_per_species.tsv")
 
+node_counts <- afp %>% group_by(Name, `Gene symbol`, Class, Subclass, Species, complex, `Element type`, `Hierarchy node`) %>% count() %>% distinct() %>% ungroup() %>% group_by(`Hierarchy node`, Class, Subclass, Species, complex, `Element type`) %>% count() %>% left_join(species_count, by="Species") %>% mutate(freq=n/nspp)
+
+write_tsv(node_counts, file="Enterobacter_node_freq_per_species.tsv")
+
+```
+
+# how is blaACT being called
+``` {r}
+afp %>% filter(grepl("blaACT",`Gene symbol`)) %>% select(Name) %>% unique() %>% nrow()
+
+blaact_alleles <- afp %>% filter(grepl("blaACT",`Gene symbol`)) %>% group_by(`Gene symbol`, `Hierarchy node`, Subclass) %>% count() %>% arrange(-n)
+
+nrow(blaact_alleles)
+blaact_alleles %>% group_by(Subclass) %>% count()
+
+
+# identify parent nodes for ACT genes
+hierarchy <- read_tsv("../ReferenceGeneHierarchy.txt")
+hierarchy %>% filter(node_id %in% blaact_alleles$`Gene symbol`) %>% group_by(parent_node_id) %>% count()
+
+blaact_alleles %>% left_join(hierarchy, join_by("Hierarchy node"=="node_id"))  %>% view() %>% group_by(parent_node_id) %>% summarise(n=sum(n))
+
+# tabulate blaACT hit combinations - they are independent
+afp %>% filter(grepl("blaACT",`Hierarchy node`)) %>% left_join(hierarchy, join_by("Hierarchy node"=="node_id")) %>% select(Name, parent_node_id) %>% pivot_wider(names_from="parent_node_id", values_from = "parent_node_id", values_fn=max) %>% group_by(`CMY2-MIR-ACT-EC`, `blaACT`) %>% count()
+
+parent_node_counts <- afp %>% left_join(hierarchy, join_by("Hierarchy node"=="node_id")) %>% group_by(Name, `Gene symbol`, Class, Subclass, Species, complex, `Element type`, `Hierarchy node`, parent_node_id) %>% count() %>% distinct() %>% ungroup() %>% group_by(parent_node_id, Class, Subclass, Species, complex, `Element type`) %>% count() %>% left_join(species_count, by="Species") %>% mutate(freq=n/nspp)
+
+write_tsv(parent_node_counts, file="Enterobacter_parent_node_freq_per_species.tsv")
+
+# plot parent nodes for ACT genes with per-species frequency
+
+parent_node_counts %>% 
+    filter(parent_node_id %in% c("CMY2-MIR-ACT-EC", "blaACT")) %>%
+    mutate(label=paste0(Species, " (n=", nspp, ")")) %>%
+    arrange(-nspp) %>%
+    ggplot(aes(y=label, x=freq, fill=parent_node_id)) + geom_col(position="stack")
+
+ggsave(width=6, height=6, file="Enterobacter_blaACT_bySpecies.pdf")
+
+```
+
+``` {r}
+
+# check accessions associated with 'Gene symbol' of core genes
+afp_core <- afp %>% filter(`Hierarchy node` %in% (node_counts %>% filter(freq>0.9 & `Element type`=="AMR") %>% pull(`Hierarchy node`))) 
+
+# boxplot of identity of blaACT hits, stratified by accession
+afp_core %>% 
+  mutate(label=paste(`Gene symbol`, `Accession of closest sequence`)) %>% 
+  filter(`Hierarchy node`=="blaACT") %>%
+  ggplot(aes(x=label, y=`% Identity to reference sequence`)) + geom_boxplot() + coord_flip()
+
+ggsave(width=5, height=9, file="blaACT_identity.pdf")
+
+
+afp_core %>% 
+  mutate(label=paste(`Gene symbol`, `Accession of closest sequence`)) %>% 
+  filter(`Hierarchy node`=="blaACT") %>%
+  ggplot(aes(x=label, y=`% Identity to reference sequence`)) + 
+  geom_boxplot() + 
+  coord_flip() +
+  facet_wrap(~complex)
+
+ggsave(width=8, height=9, file="blaACT_identity_byComplex.pdf")
+
+
+afp_core %>% 
+  mutate(label=paste(`Gene symbol`, `Accession of closest sequence`)) %>% 
+  filter(`Hierarchy node`=="blaACT") %>%
+  ggplot(aes(x=label, y=`% Identity to reference sequence`)) + 
+  geom_boxplot() + coord_flip() +
+  facet_wrap(~Species) + theme(axis.text =element_blank())
+
+ggsave(width=12, height=9, file="blaACT_identity_bySpp.pdf")
+
+
+```
+```
+
+# other core genes
+``` {r}
 # AMR markers with per-species frequency >90% (candidate core genes)
 gene_counts %>% filter(nspp>10 & freq>0.9 & `Element type`=="AMR") %>% view()
 
 # plot AMR markers with per-species frequency >90% (candidate core genes)
 gene_counts %>% filter(nspp>10 & freq>0.9 & `Element type`=="AMR") %>%
+  filter(!(`Gene symbol` %in% c("blaACT", "ampC"))) %>%
   mutate(label=paste0(Species, " (n=", nspp, ")")) %>%
   arrange(-nspp) %>%
-  ggplot(aes(y=label, x=freq, fill=`Gene symbol`)) + geom_col(position='dodge') + facet_wrap(~`Gene symbol`)
+  ggplot(aes(y=label, x=freq, fill=complex)) + 
+  geom_col(position='dodge') + 
+  facet_wrap(~`Gene symbol`) + theme(legend.position="bottom")
 
 ggsave(width=10, height=10, file="Enterobacter_candidate_coreGenes.pdf")
 ```
