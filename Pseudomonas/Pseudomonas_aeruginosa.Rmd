@@ -68,7 +68,7 @@ ggsave(width=5, height=5, file="PA_candidate_coreGenes.pdf")
 # check for core genes - nodes
 ``` {r}
 
-# gene frequency per species
+# node frequency per species
 node_counts <- afp %>% group_by(Name, `Gene symbol`, Class, Subclass, `Element type`, `Hierarchy node`) %>% count() %>% distinct() %>% ungroup() %>% group_by(`Gene symbol`, Class, Subclass, `Element type`, `Hierarchy node`) %>% count() %>% arrange(-n) %>% mutate(freq=n/denom)
 
 write_tsv(node_counts, file="PA_node_freq.tsv")
@@ -122,7 +122,6 @@ blaoxa_alleles <- afp %>% filter(grepl("blaOXA",`Gene symbol`)) %>% group_by(`Ge
 nrow(blaoxa_alleles)
 blaoxa_alleles %>% group_by(Subclass) %>% count()
 
-# identify parent nodes for OXA genes
 hierarchy <- read_tsv("../ReferenceGeneHierarchy.txt")
 hierarchy %>% filter(node_id %in% blaoxa_alleles$`Gene symbol`) %>% group_by(parent_node_id) %>% count()
 

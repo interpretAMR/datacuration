@@ -413,7 +413,7 @@ gene_counts %&gt;% filter(freq&gt;0.9 &amp; `Element type`==&quot;AMR&quot;) %&g
 </div>
 <div id="check-for-core-genes---nodes" class="section level1">
 <h1>check for core genes - nodes</h1>
-<pre class="r"><code># gene frequency per species
+<pre class="r"><code># node frequency per species
 node_counts &lt;- afp %&gt;% group_by(Name, `Gene symbol`, Class, Subclass, `Element type`, `Hierarchy node`) %&gt;% count() %&gt;% distinct() %&gt;% ungroup() %&gt;% group_by(`Gene symbol`, Class, Subclass, `Element type`, `Hierarchy node`) %&gt;% count() %&gt;% arrange(-n) %&gt;% mutate(freq=n/denom)
 
 write_tsv(node_counts, file=&quot;PA_node_freq.tsv&quot;)
@@ -500,8 +500,7 @@ nrow(blaoxa_alleles)</code></pre>
 ## 1 BETA-LACTAM      90
 ## 2 CARBAPENEM        3
 ## 3 CEPHALOSPORIN    14</code></pre>
-<pre class="r"><code># identify parent nodes for OXA genes
-hierarchy &lt;- read_tsv(&quot;../ReferenceGeneHierarchy.txt&quot;)
+<pre class="r"><code>hierarchy &lt;- read_tsv(&quot;../ReferenceGeneHierarchy.txt&quot;)
 hierarchy %&gt;% filter(node_id %in% blaoxa_alleles$`Gene symbol`) %&gt;% group_by(parent_node_id) %&gt;% count()</code></pre>
 <pre><code>## # A tibble: 11 × 2
 ## # Groups:   parent_node_id [11]
