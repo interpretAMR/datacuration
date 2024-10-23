@@ -11,7 +11,7 @@ R code with examples using public NCBI AST data, and AllTheBacteria AMRfinderplu
 
 Helper functions to parse and analysis AST/AMRfp data:
 * `AllTheBacteria_functions.R` (function to extract AMRfinderplus results for a given species)
-* `NARMS_functions.R` (function to parse AST data from NARMS data)
+* `NARMS_functions.R` (function to parse AST data from the US National Antimicrobial Resistance Monitoring System, [NARMS](https://www.fda.gov/animal-veterinary/national-antimicrobial-resistance-monitoring-system/narms-now-integrated-data)
 * `functions.R` (functions for comparing AST vs AMRfp genotype data, including assessing solo positive-predictive value per marker, and fitting and plotting logistic regression for a given drug and associated markers)
 
 ## Data files
