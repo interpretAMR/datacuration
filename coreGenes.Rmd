@@ -1,0 +1,27 @@
+---
+title: "Core genes"
+output: html_document
+date: "2024-10-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = 'png', echo = TRUE, message = FALSE, warning = FALSE,
+                      cache = FALSE, fig.align = 'center')
+knitr::opts_knit$set(root.dir = getwd())
+
+# Data wrangling
+library(tidyverse)
+library(dplyr)
+source("functions.R")
+```
+
+# calculate node frequencies (including combined count for each node as a leaf+parent)
+```{r }
+
+species_list <- read_tsv("AllTheBacteria/file_info.tsv", col_names=F) %>% 
+  mutate(sp=gsub(" [0-9]+", "", X1)) %>% pull(sp)
+
+for (species in species_list) {
+  getCoreGenes(amrfp_results=paste0("AllTheBacteria/ATB_",species,"_AFP.tsv.gz"), species=species)
+}
+```

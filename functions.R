@@ -503,3 +503,56 @@ getBinMatMIC <- function(ast_matched, antibiotic, afp_matched, refgene_class=NUL
   return(afp_binary_markers)
   
 }
+
+
+
+
+getCoreGenes <- function(amrfp_results="AllTheBacteria/ATB_Klebsiella_pneumoniae_AFP.tsv.gz", species="Klebsiella pneumoniae", species_calls="AllTheBacteria/ATB_species_calls.tsv.gz", amrfp_status="AllTheBacteria/ATB_AMRFP_status.tsv.gz", hierarchy="ReferenceGeneHierarchy.txt",outdir="AllTheBacteria/") {
+
+afp <-read_tsv(amrfp_results)
+gene_counts <- afp %>% group_by(`Gene symbol`, Class, Subclass) %>% count()
+
+species_calls <- read_tsv(species_calls)
+
+samples <- species_calls %>% filter(Species==species) %>% pull(Sample)
+
+afp_status <- read_tsv(amrfp_status) %>% filter(sample %in% samples)
+
+denominator <- afp_status %>% filter(status=="PASS") %>% nrow()
+
+# afp results including null row for each genome that ran but returned no hits
+afp <- afp_status %>% rename(Name=sample) %>% left_join(afp) %>% filter(status=="PASS")
+
+# node frequency
+node_counts <- afp %>% 
+	filter(`Element type`=="AMR") %>% 
+	group_by(Name, `Gene symbol`, Class, Subclass, `Hierarchy node`) %>% count() %>% 
+	distinct() %>% ungroup() %>% 
+	group_by(`Gene symbol`, Class, Subclass, `Hierarchy node`) %>% 
+	count() %>% 
+	arrange(-n) %>% 
+	mutate(freq=n/denominator)
+
+# parent node frequency
+hierarchy <- read_tsv(hierarchy)
+
+node_counts <- hierarchy %>% select(node_id, parent_node_id, symbol) %>% 
+	right_join(node_counts, join_by("node_id"=="Hierarchy node"))
+
+parent_node_counts <- node_counts %>% 
+	group_by(parent_node_id) %>% 
+	summarise(n=sum(n))
+
+node_or_parent <- node_counts %>% 
+	full_join(parent_node_counts, join_by("node_id"=="parent_node_id"), suffix=c(".node", ".node_child")) %>% 
+	mutate(sum=sum(n.node,n.node_child, na.rm=T)) %>% 
+	mutate(freq=sum/denominator) %>% 
+	arrange(-sum) %>% 
+	relocate(freq, .after=sum) %>% 
+	select(-symbol)
+
+write_tsv(node_or_parent, file=paste0(outdir,species,"_node_frequencies.tsv"))
+
+return(nodes=node_or_parent)
+
+}
