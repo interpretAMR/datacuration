@@ -36,10 +36,31 @@ common_genes <- tibble()
 
 for (species in species_list) {
   infile <- paste0("AllTheBacteria/",species,"_node_frequencies.tsv")
-  common_genes <- common_genes %>% bind_rows(read_tsv(infile,col_types="cccccdddd") %>% mutate(Species=species))
+  common_genes <- common_genes %>% bind_rows(read_tsv(infile,col_types="ccccccddddd"))
 }
 ```
 
 ``` {r}
+
 common_genes %>% filter(freq>0.8) %>% relocate(Species, .before = node_id) %>% relocate(freq, .before = node_id) %>% view() %>% write_tsv("core_gene_nodes.csv")
+
+# number of common genes (freq >=80%) per spp (with >=10 genomes)
+common_genes %>% filter(freq>0.8) %>% group_by(Species, denominator) %>% count() %>% filter(denominator>=10) 
+
+# histogram of number of common genes
+common_genes %>% group_by(Species, denominator) %>% summarise(n=sum(freq>=0.95)) %>%
+  filter(denominator>=20) %>% 
+  ggplot(aes(x=n)) + geom_histogram(binwidth=0.5) + theme_bw() + 
+  labs(x="AMR core genes (≥95% frequency)", y="Number of species (N≥20 genomes)")
+
+ggsave("common_genes_n20_p90.pdf", width=6,height=4)
+
+common_genes %>% group_by(Species, denominator) %>% summarise(n=sum(freq>=0.99)) %>%
+  filter(denominator>=100) %>% 
+  ggplot(aes(x=n)) + geom_histogram(binwidth=0.5) + theme_bw() + 
+  labs(x="AMR core genes (≥99% frequency)", y="Number of species (N≥100 genomes)")
+
+ggsave("common_genes_n100_p99.pdf", width=6,height=4)
+
 ```
+
