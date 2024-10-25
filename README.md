@@ -9,6 +9,11 @@ R code with examples using public NCBI AST data, and AllTheBacteria AMRfinderplu
 * `Enterobacter/Enterobacter.Rmd` (output in `Enterobacter/Enterobacter.html`)
 * `Pseudomonas/Pseudomonas_aeruginosa.Rmd` (output in `Pseudomonas/Pseudomonas_aeruginosa.html`)
 
+Helper functions to parse and analysis AST/AMRfp data:
+* `AllTheBacteria_functions.R` (function to extract AMRfinderplus results for a given species)
+* `NARMS_functions.R` (function to parse AST data from the US National Antimicrobial Resistance Monitoring System, [NARMS](https://www.fda.gov/animal-veterinary/national-antimicrobial-resistance-monitoring-system/narms-now-integrated-data)
+* `functions.R` (functions for comparing AST vs AMRfp genotype data, including assessing solo positive-predictive value per marker, and fitting and plotting logistic regression for a given drug and associated markers)
+
 ## Data files
 
 ### Antimicrobial susceptibility testing (AST) phenotypes
@@ -55,4 +60,4 @@ ecoli_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% 
   write_tsv(file="ATB_Ecoli_AFP.tsv.gz")
 ```
 
-
+Or you can use the function `atb_amrfp_filter_by_taxa` in the file `AllTheBacteria_functions.R`
