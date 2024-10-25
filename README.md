@@ -20,7 +20,9 @@ Helper functions to parse and analysis AST/AMRfp data:
 
 `/AST`
 
-* `Ecoli_AST.tsv.gz` - public AST data downloaded from [NCBI AST](https://www.ncbi.nlm.nih.gov/pathogens/ast#scientific_name:Escherichia%20coli) (9094 unique biosamples with AST data on at least one drug (median 15 drugs, IQR 14-18 drugs)) (<2 MB)
+public AST data downloaded from [NCBI AST browser](https://www.ncbi.nlm.nih.gov/pathogens/ast#scientific_name:Escherichia%20coli)
+
+* `Ecoli_AST.tsv.gz` -  (9094 unique biosamples with AST data on at least one drug (median 15 drugs, IQR 14-18 drugs)) (<2 MB)
 * `AST_Enterobacter.tsv.gz` (221 unique biosamples with AST data on at least one drug (median 21 drugs, IQR 15-26 drugs) (<100 KB)
 * `AST_Pseudomonas_aeruginosa.tsv.gz` (607 unique biosamples with AST data on at least one drug (median 1 drugs, IQR 6-14 drugs) (<100 KB)
 
