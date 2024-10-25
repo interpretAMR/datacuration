@@ -20,7 +20,9 @@ Helper functions to parse and analysis AST/AMRfp data:
 
 `/AST`
 
-* `Ecoli_AST.tsv.gz` - public AST data downloaded from [NCBI AST](https://www.ncbi.nlm.nih.gov/pathogens/ast#scientific_name:Escherichia%20coli) (9094 unique biosamples with AST data on at least one drug (median 15 drugs, IQR 14-18 drugs)) (<2 MB)
+public AST data downloaded from [NCBI AST browser](https://www.ncbi.nlm.nih.gov/pathogens/ast#scientific_name:Escherichia%20coli)
+
+* `Ecoli_AST.tsv.gz` -  (9094 unique biosamples with AST data on at least one drug (median 15 drugs, IQR 14-18 drugs)) (<2 MB)
 * `AST_Enterobacter.tsv.gz` (221 unique biosamples with AST data on at least one drug (median 21 drugs, IQR 15-26 drugs) (<100 KB)
 * `AST_Pseudomonas_aeruginosa.tsv.gz` (607 unique biosamples with AST data on at least one drug (median 1 drugs, IQR 6-14 drugs) (<100 KB)
 
@@ -35,29 +37,68 @@ This has >26 M lines, one per genome-gene hit, but as it's the raw AMRfinderplus
 
 Species calls were made separately for AllTheBacteria using sylph, and can be downloaded from [here](https://ftp.ebi.ac.uk/pub/databases/AllTheBacteria/Releases/0.2/metadata/species_calls.tsv.gz) (13.4 MB .tsv.gz file)
 
-This repo contains files with the AMRfinderplus output extracted for selected species:
+This repo contains files with the AMRfinderplus output extracted for all the ESGEM-AMR target organism subgroups:
 
 `/AllTheBacteria`
 
-* _Escherichia coli_: `ATB_Ecoli_AFP.tsv.gz` - 9,179,705 lines for 314,978 unique genomes (43 MB)
-* _Salmonella enterica_: `ATB_Salmonella_AFP.tsv.gz` - 6,133,567 lines for 534,667 unique genomes (26 MB)
-* _Pseudomonas aeruginosa_: `ATB_Pseudomonas_aeruginosa_AFP.tsv.gz` - 389,574 lines for 24,854 unique genomes (7.6 MB)
-* _Enterobacter_: `ATB_Enterobacter_AFP.tsv.gz` - 332,099 lines for 9,465 unique genomes (7.4 MB) 
+**Organism, lines, strains**
+* Achromobacter 1606 440
+* Acinetobacter baumannii 244302 14460
+* Aeromonas 9954 1837
+* Bordetella 715 519
+* Brucella 12515 2514
+* Burkholderia cepacia 1061 238
+* Burkholderia mallei 20340 5119  [Note, this is how GTDB labels Burkholderia pseudomallei]
+* Campylobacter 314666 107848
+* Chryseobacterium 107 74
+* Clostridioides difficile 373507 26347
+* Corynebacterium diphtheriae 2373 822
+* Escherichia coli 9179705 314978 [Note, only selected columns are included due to file size restrictions on github, parse your own copy if you want the complete file]
+* Edwardsiella 97 26
+* Enterobacter 334367 9545
+* Enterococcus 551141 38920
+* Haemophilus influenzae 16867 10990
+* Klebsiella pneumoniae 2033309 57070
+* Klebsiella quasipneumoniae 87992 3034
+* Klebsiella variicola 48994 2423
+* Legionella 1986 1803
+* Listeria 236353 61136
+* Mycobacterium tuberculosis 402953 134246
+* Mycoplasma 280 173
+* Neisseria gonorrhoeae 667163 43643
+* Neisseria meningitidis 198052 34561
+* Pasteurella 751 122
+* Proteus mirabilis 11032 1125
+* Pseudomonas_aeruginosa 389574 25057
+* Salmonella 6133567 534667 [Note, only selected columns are included due to file size restrictions on github, parse your own copy if you want the complete file]
+* Serratia 44719 2534
+* Shewanella 723 164
+* Staphylococcus 3116441 119669
+* Stenotrophomonas 23599 1998
+* Streptococcus 328469 129068
+* Treponema 9 8
+* Vibrio 146485 19721
+* Yersinia 65021 4370
+
+Note that there are no AMRFP results for Ureaplasma
   
-The script `ATB.Rmd` shows how we used R to pull out AMRfinderplus results for genomes belonging to a particular species, which can be used to extract data for other species, like this:
+The script `ATB_ESGEM_orgs.Rmd` shows how we used R to pull out AMRfinderplus results for genomes belonging to a particular species
+You can use it to extract data for other species, like this:
 
 ```
-# get list of E. coli samples
-species_calls <- read_tsv("AllTheBacteria/ATB_species_calls.tsv.gz")
-ecoli <- species_calls %>% filter(Species=="Escherichia coli") %>% pull(Sample)
+library(tidyverse)
+library(dplyr)
+source("AllTheBacteria_functions.R")
 
-# read in only those lines matching these samples
-f <- function(x, pos) subset(x, Name %in% ecoli)
-ecoli_AFP <- read_tsv_chunked("AMRFP_results.tsv.gz", DataFrameCallback$new(f), chunk_size = 10000)
+# set location of the full set of AMRfinderplus results (can be downloaded from here: [https://osf.io/zgexh](https://osf.io/zgexh) (0.5GB .tsv.gz file)
+ATB_amrfp <- "AMRFP_results.tsv.gz" 
 
-# select key columns to keep output file size small-ish
-ecoli_AFP %>% select(Name, `Gene symbol`, `Hierarchy node`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`) %>%
-  write_tsv(file="ATB_Ecoli_AFP.tsv.gz")
+# name of organism to extract data for (we will search for this string in the organism names, so it can be a species or genus)
+taxa <- "Enterobacter"
+
+# extract AMRfinderplus results for this taxa of interest
+amrfp <- atb_amrfp_filter_by_taxa(user_taxa=taxa, atb_armfp_results_path=ATB_amrfp)
+
+# write out the resulting file
+write_tsv(amrfp, file="Enterobacter_AFP.tsv.gz"))
 ```
-
-Or you can use the function `atb_amrfp_filter_by_taxa` in the file `AllTheBacteria_functions.R`
