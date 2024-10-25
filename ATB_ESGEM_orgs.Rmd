@@ -17,8 +17,7 @@ source("AllTheBacteria_functions.R")
 
 # set path to file of AMRFinderPlus from AllTheBacteria, downlaoded from https://osf.io/zgexh (0.5GB)
 ``` {r}
-#ATB_amrfp <- "AMRFP_results.tsv.gz"
-ATB_amrfp <- "/Users/ipmbkhot/Library/CloudStorage/GoogleDrive-drkatholt@gmail.com/My\ Drive/AMRnet/resistance\ rules/AMRFP_results.tsv.gz"
+ATB_amrfp <- "AMRFP_results.tsv.gz"
 
 ```
 
