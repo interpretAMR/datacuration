@@ -158,6 +158,7 @@ the_rest <- ast %>% filter(is.na(`MIC (mg/L)`) | `Resistance phenotype`!="not de
 
 mic_interpreted <- mic_to_define %>%
   mutate(mic=paste0(`Measurement sign`, `MIC (mg/L)`)) %>% 
+  mutate(mic=gsub("==","",mic)) %>%
   select(BioSample, Antibiotic, mic) %>%
   pivot_wider(names_from=Antibiotic, values_from = mic) %>%
   mutate(across(ampicillin:moxifloxacin, as.mic)) %>% # set class MIC

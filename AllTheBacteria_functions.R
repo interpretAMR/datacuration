@@ -28,16 +28,12 @@ invisible(lapply(packages, library, character.only = TRUE))
 #
 #   Returns: data frame of AMRFP hits for specific taxa
 #
-atb_amrfp_filter_by_taxa <- function(user_taxa=c("Salmonella"), atb_armfp_results_path="AllTheBacteria/AMRFP_results.tsv.gz", atb_armfp_qc_status_path="AllTheBacteria/AMRFP_status.tsv.gz", atb_species_results_path="AllTheBacteria/species_calls.tsv.gz"){
+atb_amrfp_filter_by_taxa <- function(user_taxa=c("Salmonella"), atb_armfp_results_path="AllTheBacteria/AMRFP_results.tsv.gz", atb_armfp_qc_status_path="AllTheBacteria/ATB_AMRFP_status.tsv.gz", atb_species_results_path="AllTheBacteria/ATB_species_calls.tsv.gz"){
   
   # load files
   atb_species_results <- read_tsv(atb_species_results_path)
   atb_armfp_qc_status <- read_tsv(atb_armfp_qc_status_path)
-  
-  # Remove lower/upper case from taxa
-  atb_species_results <- atb_species_results %>%
-    mutate(Species = tolower(Species))
-  
+    
   # create an empty vector for sample accessions
   combined_sample_accessions <- NULL
   
@@ -46,7 +42,7 @@ atb_amrfp_filter_by_taxa <- function(user_taxa=c("Salmonella"), atb_armfp_result
     
     # Get sample accessions for all taxa
     temp_sample_accessions <- atb_species_results %>%
-      filter(grepl(tolower(taxa), Species)) %>%
+      filter(grepl(taxa, Species)) %>%
       select(Sample) %>%
       unique() %>%
       pull()
@@ -66,5 +62,5 @@ atb_amrfp_filter_by_taxa <- function(user_taxa=c("Salmonella"), atb_armfp_result
     left_join(atb_armfp_qc_status, by=c("Name"="sample"))
   
   # return data frame for selected taxa
-  return(as.data.frame(selected_atb_amrfp))
+  return(selected_atb_amrfp)
 }

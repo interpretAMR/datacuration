@@ -1,0 +1,149 @@
+---
+title: "Extract AMRfinderplus results for all ESGEM-AMR organisms"
+output: html_document
+date: "2024-10-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = 'png', echo = TRUE, message = FALSE, warning = FALSE,
+                      cache = FALSE, fig.align = 'center')
+knitr::opts_knit$set(root.dir = getwd())
+
+# Data wrangling
+library(tidyverse)
+library(dplyr)
+source("AllTheBacteria_functions.R")
+```
+
+# set path to file of AMRFinderPlus from AllTheBacteria, downlaoded from https://osf.io/zgexh (0.5GB)
+``` {r}
+#ATB_amrfp <- "AMRFP_results.tsv.gz"
+ATB_amrfp <- "/Users/ipmbkhot/Library/CloudStorage/GoogleDrive-drkatholt@gmail.com/My\ Drive/AMRnet/resistance\ rules/AMRFP_results.tsv.gz"
+
+```
+
+
+# extract AMRfp data for a given species
+``` {r}
+# for a given species:
+# extract amrfp results
+# report number of rows, number of samples
+# write out file
+getAMRfp <- function(species) {
+  amrfp <- atb_amrfp_filter_by_taxa(user_taxa=species, atb_armfp_results_path=ATB_amrfp)
+  write_tsv(amrfp, file=paste0("AllTheBacteria/ATB_",species,"_AFP.tsv.gz"))
+  as.data.frame(paste(species, dim(amrfp)[1], length(unique(amrfp$Name)))) %>%
+    write_tsv(file=paste0("AllTheBacteria/ATB_",species,"_AFP_info.tsv"), col_names = F)
+}
+```
+
+``` {r}
+getAMRfp("Enterococcus")
+```
+
+``` {r}
+getAMRfp("Staphylococcus")
+```
+
+``` {r}
+getAMRfp("Acinetobacter baumannii")
+```
+
+``` {r}
+getAMRfp("Serratia")
+```
+
+``` {r}
+getAMRfp("Neisseria gonorrhoeae")
+getAMRfp("Streptococcus")
+```
+
+``` {r}
+getAMRfp("Campylobacter")
+getAMRfp("Haemophilus influenzae")
+```
+
+``` {r}
+getAMRfp("Achromobacter")
+getAMRfp("Aeromonas")
+getAMRfp("Bordetella")
+getAMRfp("Brucella")
+getAMRfp("Burkholderia cepacia")
+getAMRfp("Burkholderia pseudomallei")
+```
+
+``` {r}
+getAMRfp("Chryseobacterium")
+getAMRfp("Corynebacterium diphtheriae")
+getAMRfp("Chryseobacterium")
+getAMRfp("Edwardsiella")
+getAMRfp("Legionella")
+getAMRfp("Listeria")
+```
+
+``` {r}
+getAMRfp("Mycoplasma")
+getAMRfp("Ureaplasma")
+getAMRfp("Neisseria meningitidis")
+```
+
+``` {r}
+getAMRfp("Pasteurella")
+getAMRfp("Proteus mirabilis")
+getAMRfp("Shewanella")
+getAMRfp("Stenotrophomonas")
+```
+
+``` {r}
+getAMRfp("Treponema")
+getAMRfp("Vibrio")
+```
+
+``` {r}
+getAMRfp("Yersinia")
+```
+
+``` {r}
+getAMRfp("Burkholderia mallei") # GTDB has mallei rather than pseudomallei
+```
+
+``` {r}
+getAMRfp("Clostridioides difficile")
+```
+
+``` {r}
+getAMRfp("Mycobacterium tuberculosis")
+```
+
+# get sample info for existing files
+
+``` {r}
+# for a given species:
+# read in amrfp results
+# report number of rows, number of samples
+# write out file
+getAMRfpinfo <- function(filepath) {
+  amrfp <- read_tsv(filepath)
+  infofile <- gsub("AFP.tsv.gz", "AFP_info.tsv", filepath)
+  species <- gsub("_AFP.tsv.gz", "", filepath)
+  species <- gsub("AllTheBacteria/ATB_","",species)
+  as.data.frame(paste(species, dim(amrfp)[1], length(unique(amrfp$Name)))) %>%
+    write_tsv(file=infofile, col_names = F)
+}
+```
+
+``` {r}
+getAMRfpinfo("AllTheBacteria/ATB_Ecoli_AFP.tsv.gz")
+```
+
+``` {r}
+getAMRfpinfo("AllTheBacteria/ATB_Salmonella_AFP.tsv.gz")
+getAMRfpinfo("AllTheBacteria/ATB_Enterobacter_AFP.tsv.gz")
+getAMRfpinfo("AllTheBacteria/ATB_Pseudomonas_aeruginosa_AFP.tsv.gz")
+```
+
+``` {r}
+getAMRfpinfo("AllTheBacteria/ATB_Klebsiella_pneumoniae_AFP.tsv.gz")
+getAMRfpinfo("AllTheBacteria/ATB_Klebsiella_quasipneumoniae_AFP.tsv.gz")
+getAMRfpinfo("AllTheBacteria/ATB_Klebsiella_variicola_AFP.tsv.gz")
+```
