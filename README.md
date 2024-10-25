@@ -46,12 +46,12 @@ This repo contains files with the AMRfinderplus output extracted for all the ESG
 * Bordetella 715 519
 * Brucella 12515 2514
 * Burkholderia cepacia 1061 238
-* Burkholderia mallei 20340 5119  [Note this is how GTDB labels Burkholderia pseudomallei]
+* Burkholderia mallei 20340 5119  [Note, this is how GTDB labels Burkholderia pseudomallei]
 * Campylobacter 314666 107848
 * Chryseobacterium 107 74
 * Clostridioides difficile 373507 26347
 * Corynebacterium diphtheriae 2373 822
-* Ecoli 9179705 314978
+* Escherichia coli 9179705 314978 [Note, only selected columns are included due to file size restrictions on github, parse your own copy if you want the complete file]
 * Edwardsiella 97 26
 * Enterobacter 334367 9545
 * Enterococcus 551141 38920
@@ -68,7 +68,7 @@ This repo contains files with the AMRfinderplus output extracted for all the ESG
 * Pasteurella 751 122
 * Proteus mirabilis 11032 1125
 * Pseudomonas_aeruginosa 389574 25057
-* Salmonella 6133567 534667
+* Salmonella 6133567 534667 [Note, only selected columns are included due to file size restrictions on github, parse your own copy if you want the complete file]
 * Serratia 44719 2534
 * Shewanella 723 164
 * Staphylococcus 3116441 119669
