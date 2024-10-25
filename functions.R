@@ -504,21 +504,20 @@ getBinMatMIC <- function(ast_matched, antibiotic, afp_matched, refgene_class=NUL
   
 }
 
-
-
-
 getCoreGenes <- function(amrfp_results="AllTheBacteria/ATB_Klebsiella_pneumoniae_AFP.tsv.gz", species="Klebsiella pneumoniae", species_calls="AllTheBacteria/ATB_species_calls.tsv.gz", amrfp_status="AllTheBacteria/ATB_AMRFP_status.tsv.gz", hierarchy="ReferenceGeneHierarchy.txt",outdir="AllTheBacteria/") {
 
 afp <-read_tsv(amrfp_results)
-gene_counts <- afp %>% group_by(`Gene symbol`, Class, Subclass) %>% count()
 
 species_calls <- read_tsv(species_calls)
 
-samples <- species_calls %>% filter(Species==species) %>% pull(Sample)
+samples <- species_calls %>% filter(grepl(species, Species)) %>% pull(Sample)
 
 afp_status <- read_tsv(amrfp_status) %>% filter(sample %in% samples)
 
-denominator <- afp_status %>% filter(status=="PASS") %>% nrow()
+denominators <- afp_status %>% filter(status=="PASS") %>% 
+	left_join(species_calls, join_by("sample"=="Sample")) %>% 
+	group_by(Species) %>% 
+	summarise(denominator=n())
 
 # afp results including null row for each genome that ran but returned no hits
 afp <- afp_status %>% rename(Name=sample) %>% left_join(afp) %>% filter(status=="PASS")
@@ -526,12 +525,11 @@ afp <- afp_status %>% rename(Name=sample) %>% left_join(afp) %>% filter(status==
 # node frequency
 node_counts <- afp %>% 
 	filter(`Element type`=="AMR") %>% 
-	group_by(Name, `Gene symbol`, Class, Subclass, `Hierarchy node`) %>% count() %>% 
+	group_by(Name, `Gene symbol`, Class, Subclass, `Hierarchy node`, Species) %>% count() %>% 
 	distinct() %>% ungroup() %>% 
-	group_by(`Gene symbol`, Class, Subclass, `Hierarchy node`) %>% 
+	group_by(`Gene symbol`, Class, Subclass, `Hierarchy node`, Species) %>% 
 	count() %>% 
-	arrange(-n) %>% 
-	mutate(freq=n/denominator)
+	arrange(-n) 
 
 # parent node frequency
 hierarchy <- read_tsv(hierarchy)
@@ -540,12 +538,16 @@ node_counts <- hierarchy %>% select(node_id, parent_node_id, symbol) %>%
 	right_join(node_counts, join_by("node_id"=="Hierarchy node"))
 
 parent_node_counts <- node_counts %>% 
-	group_by(parent_node_id) %>% 
-	summarise(n=sum(n))
+	group_by(parent_node_id, Species) %>% 
+	summarise(n=sum(n)) %>%
+	filter(!is.na(parent_node_id))
 
 node_or_parent <- node_counts %>% 
-	full_join(parent_node_counts, join_by("node_id"=="parent_node_id"), suffix=c(".node", ".node_child")) %>% 
-	mutate(sum=sum(n.node,n.node_child, na.rm=T)) %>% 
+	full_join(parent_node_counts, join_by("node_id"=="parent_node_id", Species), suffix=c(".node", ".node_child")) %>% 
+	mutate(n.node_child=if_else(is.na(n.node_child), 0, n.node_child)) %>%
+	mutate(n.node=if_else(is.na(n.node), 0, n.node)) %>%
+	mutate(sum=n.node + n.node_child) %>%
+	left_join(denominators, by="Species") %>%
 	mutate(freq=sum/denominator) %>% 
 	arrange(-sum) %>% 
 	relocate(freq, .after=sum) %>% 

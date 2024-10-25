@@ -1,1 +1,16 @@
-node_id	parent_node_id	Gene symbol	Class	Subclass	n.node	n.node_child	sum	freq
+node_id	parent_node_id	Gene symbol	Class	Subclass	Species	n.node	n.node_child	sum	freq	denominator
+tet(W)	tet(M-W-O-S)	tet(W)	TETRACYCLINE	TETRACYCLINE	Treponema_D succinifaciens	2	0	2	1	2
+blaTEM	bla-A	blaTEM	BETA-LACTAM	BETA-LACTAM	Treponema pallidum	1	1	2	0.004073319755600814	491
+tet(M-W-O-S)	NA	NA	NA	NA	Treponema_D succinifaciens	0	2	2	1	2
+aadE	ant(6)	aadE	AMINOGLYCOSIDE	STREPTOMYCIN	Treponema_D berlinense	1	0	1	1	1
+aph(3')-Ia	aph(3')-I	aph(3')-Ia	AMINOGLYCOSIDE	KANAMYCIN	Treponema pallidum	1	0	1	0.002036659877800407	491
+tet(W)	tet(M-W-O-S)	tet(W)	TETRACYCLINE	TETRACYCLINE	Treponema_D berlinense	1	0	1	1	1
+tet(W)	tet(M-W-O-S)	tet(W)	TETRACYCLINE	TETRACYCLINE	Treponema_D porcinum	1	0	1	1	1
+blaTEM-171	blaTEM	blaTEM-171	BETA-LACTAM	BETA-LACTAM	Treponema_B pedis	1	0	1	0.25	4
+blaTEM-181	blaTEM	blaTEM-181	BETA-LACTAM	BETA-LACTAM	Treponema pallidum	1	0	1	0.002036659877800407	491
+ant(6)	NA	NA	NA	NA	Treponema_D berlinense	0	1	1	1	1
+aph(3')-I	NA	NA	NA	NA	Treponema pallidum	0	1	1	0.002036659877800407	491
+bla-A	NA	NA	NA	NA	Treponema pallidum	0	1	1	0.002036659877800407	491
+blaTEM	NA	NA	NA	NA	Treponema_B pedis	0	1	1	0.25	4
+tet(M-W-O-S)	NA	NA	NA	NA	Treponema_D berlinense	0	1	1	1	1
+tet(M-W-O-S)	NA	NA	NA	NA	Treponema_D porcinum	0	1	1	1	1

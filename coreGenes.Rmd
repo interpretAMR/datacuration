@@ -21,7 +21,25 @@ source("functions.R")
 species_list <- read_tsv("AllTheBacteria/file_info.tsv", col_names=F) %>% 
   mutate(sp=gsub(" [0-9]+", "", X1)) %>% pull(sp)
 
-for (species in species_list) {
+for (species in species_list[28:37]) {
   getCoreGenes(amrfp_results=paste0("AllTheBacteria/ATB_",species,"_AFP.tsv.gz"), species=species)
 }
+
+```
+
+# read in genes per species and extract all those with frequency > 80%
+``` {r}
+species_list <- read_tsv("AllTheBacteria/file_info.tsv", col_names=F) %>% 
+  mutate(sp=gsub(" [0-9]+", "", X1)) %>% pull(sp)
+
+common_genes <- tibble()
+
+for (species in species_list) {
+  infile <- paste0("AllTheBacteria/",species,"_node_frequencies.tsv")
+  common_genes <- common_genes %>% bind_rows(read_tsv(infile,col_types="cccccdddd") %>% mutate(Species=species))
+}
+```
+
+``` {r}
+common_genes %>% filter(freq>0.8) %>% relocate(Species, .before = node_id) %>% relocate(freq, .before = node_id) %>% view() %>% write_tsv("core_gene_nodes.csv")
 ```

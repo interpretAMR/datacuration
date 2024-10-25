@@ -1,1 +1,12 @@
-node_id	parent_node_id	Gene symbol	Class	Subclass	n.node	n.node_child	sum	freq
+node_id	parent_node_id	Gene symbol	Class	Subclass	Species	n.node	n.node_child	sum	freq	denominator
+tet(M)	tet(M-W-O-S)	tet(M)	TETRACYCLINE	TETRACYCLINE	Mycoplasma capri	166	0	166	0.9325842696629213	178
+tet(M-W-O-S)	NA	NA	NA	NA	Mycoplasma capri	0	166	166	0.9325842696629213	178
+blaTEM	bla-A	blaTEM	BETA-LACTAM	BETA-LACTAM	Mycoplasma capri	5	104	109	0.6123595505617978	178
+blaTEM-116	blaTEM	blaTEM-116	BETA-LACTAM	BETA-LACTAM	Mycoplasma capri	104	0	104	0.5842696629213483	178
+bla-A	NA	NA	NA	NA	Mycoplasma capri	0	5	5	0.028089887640449437	178
+tet(M)	tet(M-W-O-S)	tet(M)	TETRACYCLINE	TETRACYCLINE	Mycoplasma feriruminatoris	3	0	3	0.6	5
+tet(M-W-O-S)	NA	NA	NA	NA	Mycoplasma feriruminatoris	0	3	3	0.6	5
+aac(6')-Ie	aac(6')-Ie_fam	aac(6')-Ie/aph(2'')-Ia	AMINOGLYCOSIDE	AMIKACIN/GENTAMICIN/KANAMYCIN/TOBRAMYCIN	Mycoplasma capricolum	1	0	1	0.3333333333333333	3
+tet(M)	tet(M-W-O-S)	tet(M)	TETRACYCLINE	TETRACYCLINE	Mycoplasma capricolum	1	0	1	0.3333333333333333	3
+aac(6')-Ie_fam	NA	NA	NA	NA	Mycoplasma capricolum	0	1	1	0.3333333333333333	3
+tet(M-W-O-S)	NA	NA	NA	NA	Mycoplasma capricolum	0	1	1	0.3333333333333333	3

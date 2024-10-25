@@ -41,6 +41,10 @@ getAMRfp("Enterococcus")
 ```
 
 ``` {r}
+getAMRfp("Enterobacter")
+```
+
+``` {r}
 getAMRfp("Staphylococcus")
 ```
 
@@ -114,6 +118,37 @@ getAMRfp("Clostridioides difficile")
 getAMRfp("Mycobacterium tuberculosis")
 ```
 
+``` {r}
+getAMRfp("Pseudomonas aeruginosa")
+getAMRfp("Klebsiella pneumoniae")
+getAMRfp("Klebsiella quasipneumoniae")
+getAMRfp("Klebsiella variicola")
+```
+
+``` {r}
+getAMRfp("Escherichia coli")
+```
+
+``` {r}
+getAMRfp("Salmonella")
+```
+
+``` {r}
+read_tsv("AllTheBacteria/ATB_Salmonella_AFP.tsv.gz") %>% 
+  filter(`Element type`=="AMR") %>%
+  select(Name, `Gene symbol`, `Hierarchy node`, `Element type`, `Element subtype`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`, `Accession of closest sequence`, Species) %>% 
+  write_tsv("AllTheBacteria/ATB_Salmonella_AFP.tsv.gz")
+```
+
+``` {r}
+read_tsv("AllTheBacteria/ATB_Escherichia coli_AFP.tsv.gz") %>% 
+  filter(`Element type`=="AMR") %>%
+  select(Name, `Gene symbol`, `Hierarchy node`, `Element type`, `Element subtype`, Class, Subclass, `% Coverage of reference sequence`, `% Identity to reference sequence`, `Accession of closest sequence`, Species) %>% 
+  write_tsv("AllTheBacteria/ATB_Escherichia coli_AFP.tsv.gz")
+```
+
+
+
 # get sample info for existing files
 
 ``` {r}
@@ -129,20 +164,4 @@ getAMRfpinfo <- function(filepath) {
   as.data.frame(paste(species, dim(amrfp)[1], length(unique(amrfp$Name)))) %>%
     write_tsv(file=infofile, col_names = F)
 }
-```
-
-``` {r}
-getAMRfpinfo("AllTheBacteria/ATB_Ecoli_AFP.tsv.gz")
-```
-
-``` {r}
-getAMRfpinfo("AllTheBacteria/ATB_Salmonella_AFP.tsv.gz")
-getAMRfpinfo("AllTheBacteria/ATB_Enterobacter_AFP.tsv.gz")
-getAMRfpinfo("AllTheBacteria/ATB_Pseudomonas_aeruginosa_AFP.tsv.gz")
-```
-
-``` {r}
-getAMRfpinfo("AllTheBacteria/ATB_Klebsiella_pneumoniae_AFP.tsv.gz")
-getAMRfpinfo("AllTheBacteria/ATB_Klebsiella_quasipneumoniae_AFP.tsv.gz")
-getAMRfpinfo("AllTheBacteria/ATB_Klebsiella_variicola_AFP.tsv.gz")
 ```

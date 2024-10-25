@@ -1,1 +1,64 @@
-node_id	parent_node_id	Gene symbol	Class	Subclass	n.node	n.node_child	sum	freq
+node_id	parent_node_id	Gene symbol	Class	Subclass	Species	n.node	n.node_child	sum	freq	denominator
+aph(9)-Ia	aph(9)-I	aph(9)-Ia	AMINOGLYCOSIDE	SPECTINOMYCIN	Legionella pneumophila	938	0	938	0.17996930161166538	5212
+aph(9)-I	NA	NA	NA	NA	Legionella pneumophila	0	938	938	0.17996930161166538	5212
+aph(9)-Ia	aph(9)-I	aph(9)-Ia	AMINOGLYCOSIDE	SPECTINOMYCIN	Legionella fraseri	346	0	346	1	346
+aph(9)-I	NA	NA	NA	NA	Legionella fraseri	0	346	346	1	346
+blaOXA-PR	bla-D	blaOXA	BETA-LACTAM	BETA-LACTAM	Legionella pneumophila	2	297	299	0.057367613200306984	5212
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella pneumophila	297	0	297	0.05698388334612433	5212
+tet(56)	tet_destruct	tet(56)	TETRACYCLINE	TETRACYCLINE	Legionella longbeachae	187	0	187	1	187
+tet_destruct	NA	NA	NA	NA	Legionella longbeachae	0	187	187	1	187
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella longbeachae	68	0	68	0.36363636363636365	187
+blaOXA-PR	NA	NA	NA	NA	Legionella longbeachae	0	68	68	0.36363636363636365	187
+catA1	catA	catA1	PHENICOL	CHLORAMPHENICOL	Legionella pneumophila	19	0	19	0.0036454336147352263	5212
+catA	NA	NA	NA	NA	Legionella pneumophila	0	19	19	0.0036454336147352263	5212
+aac(6')-D42	aac(6')	aac(6')-D42	AMINOGLYCOSIDE	KANAMYCIN	Legionella pneumophila	13	0	13	0.0024942440521872602	5212
+aac(6')	NA	NA	NA	NA	Legionella pneumophila	0	13	13	0.0024942440521872602	5212
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella dumoffii	6	0	6	1	6
+blaOXA-PR	NA	NA	NA	NA	Legionella dumoffii	0	6	6	1	6
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella anisa	5	0	5	0.20833333333333334	24
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella fraseri	5	0	5	0.014450867052023121	346
+blaOXA-PR	NA	NA	NA	NA	Legionella anisa	0	5	5	0.20833333333333334	24
+blaOXA-PR	NA	NA	NA	NA	Legionella fraseri	0	5	5	0.014450867052023121	346
+blaFEZ-1	blaFEZ	blaFEZ-1	BETA-LACTAM	CARBAPENEM	Legionella gormanii	4	0	4	1	4
+blaFEZ	NA	NA	NA	NA	Legionella gormanii	0	4	4	1	4
+aph(6)-Id	aph(6)-I	aph(6)-Id	AMINOGLYCOSIDE	STREPTOMYCIN	Legionella pneumophila	3	0	3	5.755947812739831e-4	5212
+aph(3'')-Ib	aph(3'')	aph(3'')-Ib	AMINOGLYCOSIDE	STREPTOMYCIN	Legionella pneumophila	3	0	3	5.755947812739831e-4	5212
+aph(3'')	NA	NA	NA	NA	Legionella pneumophila	0	3	3	5.755947812739831e-4	5212
+aph(6)-I	NA	NA	NA	NA	Legionella pneumophila	0	3	3	5.755947812739831e-4	5212
+aph(6)-Id	aph(6)-I	aph(6)-Id	AMINOGLYCOSIDE	STREPTOMYCIN	Legionella fraseri	2	0	2	0.005780346820809248	346
+aph(3'')-Ib	aph(3'')	aph(3'')-Ib	AMINOGLYCOSIDE	STREPTOMYCIN	Legionella fraseri	2	0	2	0.005780346820809248	346
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella gormanii	2	0	2	0.5	4
+aph(3'')	NA	NA	NA	NA	Legionella fraseri	0	2	2	0.005780346820809248	346
+aph(6)-I	NA	NA	NA	NA	Legionella fraseri	0	2	2	0.005780346820809248	346
+bla-D	NA	NA	NA	NA	Legionella pneumophila	0	2	2	3.837298541826554e-4	5212
+blaOXA-PR	NA	NA	NA	NA	Legionella gormanii	0	2	2	0.5	4
+aac(3)-IVa	aac(3)_IV_fam	aac(3)-IVa	AMINOGLYCOSIDE	APRAMYCIN/GENTAMICIN/TOBRAMYCIN	Legionella pneumophila;Salmonella enterica	1	0	1	0.5	2
+aac(6')-D42	aac(6')	aac(6')-D42	AMINOGLYCOSIDE	KANAMYCIN	Legionella_C rubrilucens	1	0	1	0.3333333333333333	3
+blaM-1	blaM	blaM	BETA-LACTAM	BETA-LACTAM	Legionella pneumophila	1	0	1	1.918649270913277e-4	5212
+aadA1	ant(3'')-Ia	aadA1	AMINOGLYCOSIDE	STREPTOMYCIN	Legionella pneumophila	1	0	1	1.918649270913277e-4	5212
+aph(4)-Ia	aph(4)-I	aph(4)-Ia	AMINOGLYCOSIDE	HYGROMYCIN	Legionella pneumophila;Salmonella enterica	1	0	1	0.5	2
+aph(9)-Ia	aph(9)-I	aph(9)-Ia	AMINOGLYCOSIDE	SPECTINOMYCIN	Legionella pneumophila;Streptococcus pneumoniae	1	0	1	1	1
+blaOXA-PR	bla-D	blaOXA	BETA-LACTAM	BETA-LACTAM	Legionella worsleiensis	1	0	1	1	1
+sul2	sul	sul2	SULFONAMIDE	SULFONAMIDE	Legionella pneumophila	1	0	1	1.918649270913277e-4	5212
+sul2	sul	sul2	SULFONAMIDE	SULFONAMIDE	Legionella pneumophila;Salmonella enterica	1	0	1	0.5	2
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella gratiana	1	0	1	1	1
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella parisiensis	1	0	1	1	1
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella pneumophila;Salmonella enterica	1	0	1	0.5	2
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella sainthelensi	1	0	1	0.5	2
+blaOXA-29	blaOXA-PR	blaOXA-29	BETA-LACTAM	BETA-LACTAM	Legionella wadsworthii	1	0	1	0.25	4
+blaTEM-116	blaTEM	blaTEM-116	BETA-LACTAM	BETA-LACTAM	Legionella fraseri	1	0	1	0.002890173410404624	346
+aac(3)_IV_fam	NA	NA	NA	NA	Legionella pneumophila;Salmonella enterica	0	1	1	0.5	2
+aac(6')	NA	NA	NA	NA	Legionella_C rubrilucens	0	1	1	0.3333333333333333	3
+ant(3'')-Ia	NA	NA	NA	NA	Legionella pneumophila	0	1	1	1.918649270913277e-4	5212
+aph(4)-I	NA	NA	NA	NA	Legionella pneumophila;Salmonella enterica	0	1	1	0.5	2
+aph(9)-I	NA	NA	NA	NA	Legionella pneumophila;Streptococcus pneumoniae	0	1	1	1	1
+bla-D	NA	NA	NA	NA	Legionella worsleiensis	0	1	1	1	1
+blaM	NA	NA	NA	NA	Legionella pneumophila	0	1	1	1.918649270913277e-4	5212
+blaOXA-PR	NA	NA	NA	NA	Legionella gratiana	0	1	1	1	1
+blaOXA-PR	NA	NA	NA	NA	Legionella parisiensis	0	1	1	1	1
+blaOXA-PR	NA	NA	NA	NA	Legionella pneumophila;Salmonella enterica	0	1	1	0.5	2
+blaOXA-PR	NA	NA	NA	NA	Legionella sainthelensi	0	1	1	0.5	2
+blaOXA-PR	NA	NA	NA	NA	Legionella wadsworthii	0	1	1	0.25	4
+blaTEM	NA	NA	NA	NA	Legionella fraseri	0	1	1	0.002890173410404624	346
+sul	NA	NA	NA	NA	Legionella pneumophila	0	1	1	1.918649270913277e-4	5212
+sul	NA	NA	NA	NA	Legionella pneumophila;Salmonella enterica	0	1	1	0.5	2

@@ -1,1 +1,297 @@
-node_id	parent_node_id	Gene symbol	Class	Subclass	n.node	n.node_child	sum	freq
+node_id	parent_node_id	Gene symbol	Class	Subclass	Species	n.node	n.node_child	sum	freq	denominator
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria monocytogenes_B	29924	0	29924	0.9995323668915759	29938
+fosX_gen	NA	NA	NA	NA	Listeria monocytogenes_B	0	29924	29924	0.9995323668915759	29938
+vga	NA	NA	NA	NA	Listeria monocytogenes_B	0	29921	29921	0.9994321597969136	29938
+vga(G)	vga	vga(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes_B	29910	0	29910	0.9990647337831519	29938
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria monocytogenes	29072	0	29072	0.9996217721693085	29083
+fosX_gen	NA	NA	NA	NA	Listeria monocytogenes	0	29072	29072	0.9996217721693085	29083
+vga(G)	vga	vga(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes	29066	0	29066	0.9994154660798404	29083
+vga	NA	NA	NA	NA	Listeria monocytogenes	0	29066	29066	0.9994154660798404	29083
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria innocua	1547	0	1547	1	1547
+fosX_gen	NA	NA	NA	NA	Listeria innocua	0	1547	1547	1	1547
+tet(M-W-O-S)	NA	NA	NA	NA	Listeria monocytogenes	0	842	842	0.028951621222019736	29083
+tet(M)	tet(M-W-O-S)	tet(M)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes	820	0	820	0.0281951655606368	29083
+emrC_Lis	RND-OM	emrC	QUATERNARY AMMONIUM	QUATERNARY AMMONIUM	Listeria monocytogenes	805	0	805	0.027679400336966614	29083
+RND-OM	NA	NA	NA	NA	Listeria monocytogenes	0	805	805	0.027679400336966614	29083
+emrC_Lis	RND-OM	emrC	QUATERNARY AMMONIUM	QUATERNARY AMMONIUM	Listeria monocytogenes_B	475	0	475	0.015866123321531166	29938
+RND-OM	NA	NA	NA	NA	Listeria monocytogenes_B	0	475	475	0.015866123321531166	29938
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria welshimeri	241	0	241	0.7875816993464052	306
+fosX_gen	NA	NA	NA	NA	Listeria welshimeri	0	241	241	0.7875816993464052	306
+tet(M-W-O-S)	NA	NA	NA	NA	Listeria innocua	0	213	213	0.13768584356819652	1547
+tet(M)	tet(M-W-O-S)	tet(M)	TETRACYCLINE	TETRACYCLINE	Listeria innocua	203	0	203	0.13122171945701358	1547
+tet(M-W-O-S)	NA	NA	NA	NA	Listeria monocytogenes_B	0	185	185	0.0061794375041752956	29938
+tet(M)	tet(M-W-O-S)	tet(M)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes_B	167	0	167	0.005578194936201483	29938
+vga(G)	vga	vga(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes_C	166	0	166	1	166
+vga	NA	NA	NA	NA	Listeria monocytogenes_C	0	166	166	1	166
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria monocytogenes_C	164	0	164	0.9879518072289156	166
+fosX_gen	NA	NA	NA	NA	Listeria monocytogenes_C	0	164	164	0.9879518072289156	166
+catA	NA	NA	NA	NA	Listeria monocytogenes_B	0	112	112	0.0037410648673926114	29938
+catA1	catA	catA1	PHENICOL	CHLORAMPHENICOL	Listeria monocytogenes_B	67	0	67	0.00223795844745808	29938
+vga(G)	vga	vga	LINCOSAMIDE	LINCOSAMIDE	Listeria welshimeri	67	0	67	0.21895424836601307	306
+vga	NA	NA	NA	NA	Listeria welshimeri	0	67	67	0.21895424836601307	306
+catA9	catA	catA	PHENICOL	CHLORAMPHENICOL	Listeria monocytogenes_B	45	20	65	0.002171153717683212	29938
+dfr_DGK	NA	NA	NA	NA	Listeria monocytogenes	0	53	53	0.0018223704569679882	29083
+dfrG	dfr_DGK	dfrG	TRIMETHOPRIM	TRIMETHOPRIM	Listeria monocytogenes	46	0	46	0.001581680019255235	29083
+bcrA_Lm	AMR	bcrA	BACITRACIN	BACITRACIN	Listeria monocytogenes	43	0	43	0.0014785269745211979	29083
+AMR	NA	NA	NA	NA	Listeria monocytogenes	0	43	43	0.0014785269745211979	29083
+catA	NA	NA	NA	NA	Listeria monocytogenes	0	43	43	0.0014785269745211979	29083
+ant(6)-Ia	ant(6)	ant(6)-Ia	AMINOGLYCOSIDE	STREPTOMYCIN	Listeria innocua	39	0	39	0.025210084033613446	1547
+ant(6)	NA	NA	NA	NA	Listeria innocua	0	39	39	0.025210084033613446	1547
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria marthii	33	0	33	1	33
+spw	ant(9)	spw	AMINOGLYCOSIDE	AMINOGLYCOSIDE	Listeria innocua	33	0	33	0.021331609566903685	1547
+ant(9)	NA	NA	NA	NA	Listeria innocua	0	33	33	0.021331609566903685	1547
+fosX_gen	NA	NA	NA	NA	Listeria marthii	0	33	33	1	33
+erm-23S_rRNA	NA	NA	NA	NA	Listeria monocytogenes	0	32	32	0.0011002991438297286	29083
+lnu_BFG	NA	NA	NA	NA	Listeria monocytogenes	0	32	32	0.0011002991438297286	29083
+mef(A)	mef_gen	mef(A)	MACROLIDE	AZITHROMYCIN/ERYTHROMYCIN	Listeria innocua	28	0	28	0.01809954751131222	1547
+IONOPHORE	NA	NA	NA	NA	Listeria monocytogenes	0	28	28	9.627617508510126e-4	29083
+mef_gen	NA	NA	NA	NA	Listeria innocua	0	28	28	0.01809954751131222	1547
+lsa(E)	lsa	lsa(E)	LINCOSAMIDE/STREPTOGRAMIN	LINCOSAMIDE/STREPTOGRAMIN	Listeria monocytogenes	24	0	24	8.252243578722965e-4	29083
+lnu(B)	lnu_BFG	lnu(B)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes	24	0	24	8.252243578722965e-4	29083
+lsa	NA	NA	NA	NA	Listeria monocytogenes	0	24	24	8.252243578722965e-4	29083
+erm(B)	erm-23S_rRNA	erm(B)	LINCOSAMIDE/MACROLIDE/STREPTOGRAMIN	CLINDAMYCIN/ERYTHROMYCIN/STREPTOGRAMIN B	Listeria monocytogenes	23	0	23	7.908400096276175e-4	29083
+tet(S)	tet(M-W-O-S)	tet(S)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes	21	0	21	7.220713131382595e-4	29083
+cat-TC	catA9	cat-TC	PHENICOL	CHLORAMPHENICOL	Listeria monocytogenes_B	20	0	20	6.680472977486806e-4	29938
+aph(3')-IIIa	aph(3')	aph(3')-IIIa	AMINOGLYCOSIDE	AMIKACIN/KANAMYCIN	Listeria monocytogenes	19	0	19	6.533026166489015e-4	29083
+ant(9)	NA	NA	NA	NA	Listeria monocytogenes	0	19	19	6.533026166489015e-4	29083
+aph(3')	NA	NA	NA	NA	Listeria monocytogenes	0	19	19	6.533026166489015e-4	29083
+mef_gen	NA	NA	NA	NA	Listeria monocytogenes_B	0	19	19	6.346449328612465e-4	29938
+msr	NA	NA	NA	NA	Listeria monocytogenes_B	0	19	19	6.346449328612465e-4	29938
+tet(S)	tet(M-W-O-S)	tet(S)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes_B	18	0	18	6.012425679738125e-4	29938
+ant(6)-Ia	ant(6)	ant(6)-Ia	AMINOGLYCOSIDE	STREPTOMYCIN	Listeria monocytogenes	17	0	17	5.845339201595433e-4	29083
+catA1	catA	catA1	PHENICOL	CHLORAMPHENICOL	Listeria monocytogenes	17	0	17	5.845339201595433e-4	29083
+msr(D)	msr	msr(D)	MACROLIDE/STREPTOGRAMIN	AZITHROMYCIN/ERYTHROMYCIN/STREPTOGRAMIN B	Listeria monocytogenes_B	17	0	17	5.678402030863786e-4	29938
+spw	ant(9)	spw	AMINOGLYCOSIDE	AMINOGLYCOSIDE	Listeria monocytogenes	17	0	17	5.845339201595433e-4	29083
+mef(A)	mef_gen	mef(A)	MACROLIDE	AZITHROMYCIN/ERYTHROMYCIN	Listeria monocytogenes_B	17	0	17	5.678402030863786e-4	29938
+ant(6)	NA	NA	NA	NA	Listeria monocytogenes	0	17	17	5.845339201595433e-4	29083
+catA9	catA	catA	PHENICOL	CHLORAMPHENICOL	Listeria monocytogenes	14	2	16	5.501495719148643e-4	29083
+dfr_DGK	NA	NA	NA	NA	Listeria innocua	0	16	16	0.010342598577892695	1547
+mdsA	RND-peri	mdsA	EFFLUX	EFFLUX	Listeria monocytogenes_B;Salmonella enterica	15	0	15	1	15
+mdsB	RND-IM	mdsB	EFFLUX	EFFLUX	Listeria monocytogenes_B;Salmonella enterica	15	0	15	1	15
+RND-IM	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	15	15	1	15
+RND-peri	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	15	15	1	15
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria monocytogenes_B;Salmonella enterica	14	0	14	0.9333333333333333	15
+narA	IONOPHORE	narA	IONOPHORE	MADURAMICIN/NARASIN/SALINOMYCIN	Listeria monocytogenes	14	0	14	4.813808754255063e-4	29083
+narB	IONOPHORE	narB	IONOPHORE	MADURAMICIN/NARASIN/SALINOMYCIN	Listeria monocytogenes	14	0	14	4.813808754255063e-4	29083
+vga(G)	vga	vga(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes_B;Salmonella enterica	14	0	14	0.9333333333333333	15
+blaTEM	bla-A	blaTEM	BETA-LACTAM	BETA-LACTAM	Listeria monocytogenes_B	3	11	14	4.676331084240764e-4	29938
+fosX_gen	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	14	14	0.9333333333333333	15
+vga	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	14	14	0.9333333333333333	15
+fexA	MFS_efflux_CHL	fexA	PHENICOL	CHLORAMPHENICOL/FLORFENICOL	Listeria monocytogenes_B	13	0	13	4.342307435366424e-4	29938
+MFS_efflux_CHL	NA	NA	NA	NA	Listeria monocytogenes_B	0	13	13	4.342307435366424e-4	29938
+erm-23S_rRNA	NA	NA	NA	NA	Listeria monocytogenes_B	0	13	13	4.342307435366424e-4	29938
+catA8	catA	catA	PHENICOL	CHLORAMPHENICOL	Listeria monocytogenes	12	0	12	4.1261217893614826e-4	29083
+vga(G)	vga	vga	LINCOSAMIDE	LINCOSAMIDE	Listeria marthii	12	0	12	0.36363636363636365	33
+vga	NA	NA	NA	NA	Listeria marthii	0	12	12	0.36363636363636365	33
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria cossartiae	11	0	11	1	11
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria monocytogenes;Listeria monocytogenes_B	11	0	11	1	11
+vga(G)	vga	vga	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes_B	11	0	11	3.6742601376177434e-4	29938
+vga(G)	vga	vga(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes;Listeria monocytogenes_B	11	0	11	1	11
+dfrG	dfr_DGK	dfrG	TRIMETHOPRIM	TRIMETHOPRIM	Listeria innocua	11	0	11	0.007110536522301228	1547
+blaTEM-116	blaTEM	blaTEM-116	BETA-LACTAM	BETA-LACTAM	Listeria monocytogenes_B	11	0	11	3.6742601376177434e-4	29938
+fosX_gen	NA	NA	NA	NA	Listeria cossartiae	0	11	11	1	11
+fosX_gen	NA	NA	NA	NA	Listeria monocytogenes;Listeria monocytogenes_B	0	11	11	1	11
+tet_L_K_45	NA	NA	NA	NA	Listeria monocytogenes	0	11	11	3.7822783069146925e-4	29083
+vga	NA	NA	NA	NA	Listeria monocytogenes;Listeria monocytogenes_B	0	11	11	1	11
+tet(S)	tet(M-W-O-S)	tet(S)	TETRACYCLINE	TETRACYCLINE	Listeria innocua	10	0	10	0.006464124111182934	1547
+fexA	MFS_efflux_CHL	fexA	PHENICOL	CHLORAMPHENICOL/FLORFENICOL	Listeria monocytogenes	10	0	10	3.4384348244679023e-4	29083
+IONOPHORE	NA	NA	NA	NA	Listeria innocua	0	10	10	0.006464124111182934	1547
+MFS_efflux_CHL	NA	NA	NA	NA	Listeria monocytogenes	0	10	10	3.4384348244679023e-4	29083
+blaTEM	bla-A	blaTEM	BETA-LACTAM	BETA-LACTAM	Listeria monocytogenes	1	8	9	3.094591342021112e-4	29083
+tet(L)	tet_L_K_45	tet(L)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes	9	0	9	3.094591342021112e-4	29083
+lnu_BFG	NA	NA	NA	NA	Listeria innocua	0	9	9	0.005817711700064641	1547
+vga(G)	vga	vga	LINCOSAMIDE	LINCOSAMIDE	Listeria cossartiae	8	0	8	0.7272727272727273	11
+lnu(G)	lnu_BFG	lnu(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes	8	0	8	2.7507478595743216e-4	29083
+sul	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	8	8	0.5333333333333333	15
+vga	NA	NA	NA	NA	Listeria cossartiae	0	8	8	0.7272727272727273	11
+msr(D)	msr	msr(D)	MACROLIDE/STREPTOGRAMIN	AZITHROMYCIN/ERYTHROMYCIN/STREPTOGRAMIN B	Listeria innocua	7	0	7	0.004524886877828055	1547
+erm(C)	erm-23S_rRNA	erm(C)	LINCOSAMIDE/MACROLIDE/STREPTOGRAMIN	CLINDAMYCIN/ERYTHROMYCIN/STREPTOGRAMIN B/TYLOSIN	Listeria monocytogenes	7	0	7	2.4069043771275314e-4	29083
+dfrD	dfr_DGK	dfrD	TRIMETHOPRIM	TRIMETHOPRIM	Listeria monocytogenes	7	0	7	2.4069043771275314e-4	29083
+lnu(A)	lnu_AE	lnu(A)	LINCOSAMIDE	LINCOSAMIDE	Listeria innocua	7	0	7	0.004524886877828055	1547
+erm(G)	erm-23S_rRNA	erm(G)	LINCOSAMIDE/MACROLIDE/STREPTOGRAMIN	ERYTHROMYCIN/LINCOSAMIDE/STREPTOGRAMIN/TYLOSIN	Listeria monocytogenes_B	7	0	7	2.338165542120382e-4	29938
+blaTEM-116	blaTEM	blaTEM-116	BETA-LACTAM	BETA-LACTAM	Listeria monocytogenes	7	0	7	2.4069043771275314e-4	29083
+ant(3'')-Ia	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	7	7	0.4666666666666667	15
+lnu_AE	NA	NA	NA	NA	Listeria innocua	0	7	7	0.004524886877828055	1547
+msr	NA	NA	NA	NA	Listeria innocua	0	7	7	0.004524886877828055	1547
+tet(M-W-O-S)	NA	NA	NA	NA	Listeria grayi	0	7	7	0.08333333333333333	84
+tet_A_B_C_D	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	7	7	0.4666666666666667	15
+lnu(G)	lnu_BFG	lnu(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria innocua	6	0	6	0.003878474466709761	1547
+aadA2	ant(3'')-Ia	aadA2	AMINOGLYCOSIDE	STREPTOMYCIN	Listeria monocytogenes_B;Salmonella enterica	5	0	5	0.3333333333333333	15
+aph(3')-Ia	aph(3')-I	aph(3')-Ia	AMINOGLYCOSIDE	KANAMYCIN	Listeria monocytogenes_B;Salmonella enterica	5	0	5	0.3333333333333333	15
+mdsA	RND-peri	mdsA	EFFLUX	EFFLUX	Listeria monocytogenes;Salmonella enterica	5	0	5	1	5
+mdsB	RND-IM	mdsB	EFFLUX	EFFLUX	Listeria monocytogenes;Salmonella enterica	5	0	5	1	5
+narA	IONOPHORE	narA	IONOPHORE	MADURAMICIN/NARASIN/SALINOMYCIN	Listeria innocua	5	0	5	0.003232062055591467	1547
+narB	IONOPHORE	narB	IONOPHORE	MADURAMICIN/NARASIN/SALINOMYCIN	Listeria innocua	5	0	5	0.003232062055591467	1547
+dfrD	dfr_DGK	dfrD	TRIMETHOPRIM	TRIMETHOPRIM	Listeria innocua	5	0	5	0.003232062055591467	1547
+sul1	sul	sul1	SULFONAMIDE	SULFONAMIDE	Listeria monocytogenes_B;Salmonella enterica	5	0	5	0.3333333333333333	15
+RND-IM	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	5	5	1	5
+RND-peri	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	5	5	1	5
+aph(3')-I	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	5	5	0.3333333333333333	15
+catA1	catA	catA1	PHENICOL	CHLORAMPHENICOL	Listeria monocytogenes_B;Salmonella enterica	4	0	4	0.26666666666666666	15
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria farberi	4	0	4	1	4
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria monocytogenes;Salmonella enterica	4	0	4	0.8	5
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria swaminathanii	4	0	4	1	4
+vga(G)	vga	vga(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes;Salmonella enterica	4	0	4	0.8	5
+dfrG	dfr_DGK	dfrG	TRIMETHOPRIM	TRIMETHOPRIM	Listeria monocytogenes_B	4	0	4	1.3360945954973613e-4	29938
+erm(C)	erm-23S_rRNA	erm(C)	LINCOSAMIDE/MACROLIDE/STREPTOGRAMIN	CLINDAMYCIN/ERYTHROMYCIN/STREPTOGRAMIN B/TYLOSIN	Listeria monocytogenes_B	4	0	4	1.3360945954973613e-4	29938
+mph(A)	mph_gen	mph(A)	MACROLIDE	AZITHROMYCIN/ERYTHROMYCIN/SPIRAMYCIN/TELITHROMYCIN	Listeria monocytogenes_B;Salmonella enterica	4	0	4	0.26666666666666666	15
+tet(M)	tet(M-W-O-S)	tet(M)	TETRACYCLINE	TETRACYCLINE	Listeria grayi	4	0	4	0.047619047619047616	84
+tet(B)	tet_A_B_C_D	tet(B)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes_B;Salmonella enterica	4	0	4	0.26666666666666666	15
+blaTEM-1	blaTEM	blaTEM-1	BETA-LACTAM	BETA-LACTAM	Listeria monocytogenes_B;Salmonella enterica	4	0	4	0.26666666666666666	15
+bla-A	NA	NA	NA	NA	Listeria monocytogenes_B	0	4	4	1.3360945954973613e-4	29938
+blaTEM	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	4	4	0.26666666666666666	15
+catA	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	4	4	0.26666666666666666	15
+dfr_DGK	NA	NA	NA	NA	Listeria monocytogenes_B	0	4	4	1.3360945954973613e-4	29938
+fosX_gen	NA	NA	NA	NA	Listeria farberi	0	4	4	1	4
+fosX_gen	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	4	4	0.8	5
+fosX_gen	NA	NA	NA	NA	Listeria swaminathanii	0	4	4	1	4
+mph_gen	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	4	4	0.26666666666666666	15
+vga	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	4	4	0.8	5
+aph(6)-Id	aph(6)-I	aph(6)-Id	AMINOGLYCOSIDE	STREPTOMYCIN	Listeria monocytogenes_B;Salmonella enterica	3	0	3	0.2	15
+lsa(E)	lsa	lsa(E)	LINCOSAMIDE/STREPTOGRAMIN	LINCOSAMIDE/STREPTOGRAMIN	Listeria innocua	3	0	3	0.0019392372333548805	1547
+tet(S)	tet(M-W-O-S)	tet(S)	TETRACYCLINE	TETRACYCLINE	Listeria grayi	3	0	3	0.03571428571428571	84
+lnu(B)	lnu_BFG	lnu(B)	LINCOSAMIDE	LINCOSAMIDE	Listeria innocua	3	0	3	0.0019392372333548805	1547
+qnrB	qnr	qnrB	QUINOLONE	QUINOLONE	Listeria monocytogenes_B	2	1	3	1.002070946623021e-4	29938
+aph(3'')-Ib	aph(3'')	aph(3'')-Ib	AMINOGLYCOSIDE	STREPTOMYCIN	Listeria monocytogenes_B;Salmonella enterica	3	0	3	0.2	15
+optrA	abc-f	optrA	PHENICOL/OXAZOLIDINONE	FLORFENICOL/OXAZOLIDINONE	Listeria monocytogenes	3	0	3	1.0315304473403707e-4	29083
+dfrA12	dfrA12_A21	dfrA12	TRIMETHOPRIM	TRIMETHOPRIM	Listeria monocytogenes_B;Salmonella enterica	3	0	3	0.2	15
+abc-f	NA	NA	NA	NA	Listeria monocytogenes	0	3	3	1.0315304473403707e-4	29083
+aph(3'')	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	3	3	0.2	15
+aph(6)-I	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	3	3	0.2	15
+dfrA12_A21	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	3	3	0.2	15
+lsa	NA	NA	NA	NA	Listeria innocua	0	3	3	0.0019392372333548805	1547
+tet_L_K_45	NA	NA	NA	NA	Listeria innocua	0	3	3	0.0019392372333548805	1547
+aac(3)-IId	aac(3)-II	aac(3)-IId	AMINOGLYCOSIDE	GENTAMICIN	Listeria monocytogenes_B;Salmonella enterica	2	0	2	0.13333333333333333	15
+aph(3')-Ia	aph(3')-I	aph(3')-Ia	AMINOGLYCOSIDE	KANAMYCIN	Listeria monocytogenes;Salmonella enterica	2	0	2	0.4	5
+cat-TC	catA9	cat-TC	PHENICOL	CHLORAMPHENICOL	Listeria monocytogenes	2	0	2	6.876869648935804e-5	29083
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria cayugensis	2	0	2	1	2
+mef(F)	mef_gen	mef(F)	MACROLIDE	AZITHROMYCIN/ERYTHROMYCIN	Listeria monocytogenes_B	2	0	2	6.680472977486806e-5	29938
+msr(G)	msr	msr(G)	MACROLIDE/STREPTOGRAMIN	AZITHROMYCIN/ERYTHROMYCIN/PRISTINAMYCIN	Listeria monocytogenes_B	2	0	2	6.680472977486806e-5	29938
+vga(G)	vga	vga	LINCOSAMIDE	LINCOSAMIDE	Listeria cayugensis	2	0	2	1	2
+floR	cmlA_floR	floR	PHENICOL	CHLORAMPHENICOL/FLORFENICOL	Listeria monocytogenes_B;Salmonella enterica	2	0	2	0.13333333333333333	15
+aadA1	ant(3'')-Ia	aadA1	AMINOGLYCOSIDE	STREPTOMYCIN	Listeria monocytogenes_B;Salmonella enterica	2	0	2	0.13333333333333333	15
+tet(K)	tet_L_K_45	tet(K)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes	2	0	2	6.876869648935804e-5	29083
+sul1	sul	sul1	SULFONAMIDE	SULFONAMIDE	Listeria monocytogenes;Salmonella enterica	2	0	2	0.4	5
+erm(B)	erm-23S_rRNA	erm(B)	LINCOSAMIDE/MACROLIDE/STREPTOGRAMIN	CLINDAMYCIN/ERYTHROMYCIN/STREPTOGRAMIN B	Listeria monocytogenes_B	2	0	2	6.680472977486806e-5	29938
+fexA	MFS_efflux_CHL	fexA	PHENICOL	CHLORAMPHENICOL/FLORFENICOL	Listeria innocua	2	0	2	0.001292824822236587	1547
+fexA	MFS_efflux_CHL	fexA	PHENICOL	CHLORAMPHENICOL/FLORFENICOL	Listeria monocytogenes;Listeria monocytogenes_B	2	0	2	0.18181818181818182	11
+tet(L)	tet_L_K_45	tet(L)	TETRACYCLINE	TETRACYCLINE	Listeria innocua	2	0	2	0.001292824822236587	1547
+lnu(A)	lnu_AE	lnu(A)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes	2	0	2	6.876869648935804e-5	29083
+lnu(A)	lnu_AE	lnu(A)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes_B	2	0	2	6.680472977486806e-5	29938
+lnu(D)	lnu_CDP	lnu(D)	LINCOSAMIDE	LINCOSAMIDE	Listeria innocua	2	0	2	0.001292824822236587	1547
+sul2	sul	sul2	SULFONAMIDE	SULFONAMIDE	Listeria monocytogenes_B;Salmonella enterica	2	0	2	0.13333333333333333	15
+tet(A)	tet_A_B_C_D	tet(A)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes_B;Salmonella enterica	2	0	2	0.13333333333333333	15
+blaCARB-2	blaPSE	blaCARB-2	BETA-LACTAM	BETA-LACTAM	Listeria monocytogenes_B;Salmonella enterica	2	0	2	0.13333333333333333	15
+MFS_efflux_CHL	NA	NA	NA	NA	Listeria innocua	0	2	2	0.001292824822236587	1547
+MFS_efflux_CHL	NA	NA	NA	NA	Listeria monocytogenes;Listeria monocytogenes_B	0	2	2	0.18181818181818182	11
+aac(3)-II	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	2	2	0.13333333333333333	15
+ant(3'')-Ia	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	2	2	0.4	5
+aph(3')-I	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	2	2	0.4	5
+blaPSE	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	2	2	0.13333333333333333	15
+cmlA_floR	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	2	2	0.13333333333333333	15
+fosX_gen	NA	NA	NA	NA	Listeria cayugensis	0	2	2	1	2
+lnu_AE	NA	NA	NA	NA	Listeria monocytogenes	0	2	2	6.876869648935804e-5	29083
+lnu_AE	NA	NA	NA	NA	Listeria monocytogenes_B	0	2	2	6.680472977486806e-5	29938
+lnu_CDP	NA	NA	NA	NA	Listeria innocua	0	2	2	0.001292824822236587	1547
+qnr	NA	NA	NA	NA	Listeria monocytogenes_B	0	2	2	6.680472977486806e-5	29938
+sul	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	2	2	0.4	5
+tet_A_B_C_D	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	2	2	0.4	5
+tet_L_K_45	NA	NA	NA	NA	Listeria monocytogenes_B	0	2	2	6.680472977486806e-5	29938
+vga	NA	NA	NA	NA	Listeria cayugensis	0	2	2	1	2
+vga	NA	NA	NA	NA	Listeria innocua	0	2	2	0.001292824822236587	1547
+aac(3)-Ia	aac(3)-I	aac(3)-Ia	AMINOGLYCOSIDE	GENTAMICIN	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+aadA12	ant(3'')-Ia	aadA12	AMINOGLYCOSIDE	STREPTOMYCIN	Listeria monocytogenes;Salmonella enterica	1	0	1	0.2	5
+aadA2	ant(3'')-Ia	aadA2	AMINOGLYCOSIDE	STREPTOMYCIN	Listeria monocytogenes;Salmonella enterica	1	0	1	0.2	5
+ant(9)-Ia	ant(9)	ant(9)-Ia	AMINOGLYCOSIDE	SPECTINOMYCIN	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+aph(3')-IIa	aph(3')-II	aph(3')-IIa	AMINOGLYCOSIDE	KANAMYCIN	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+aph(3')-IIa	aph(3')-II	aph(3')-IIa	AMINOGLYCOSIDE	KANAMYCIN	Listeria monocytogenes_B	1	0	1	3.340236488743403e-5	29938
+aph(3')-Ia	aph(3')-I	aph(3')-Ia	AMINOGLYCOSIDE	KANAMYCIN	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+aph(3')-Ia	aph(3')-I	aph(3')-Ia	AMINOGLYCOSIDE	KANAMYCIN	Listeria monocytogenes_B	1	0	1	3.340236488743403e-5	29938
+aph(3')-VIa	aph(3')-VI	aph(3')-VIa	AMINOGLYCOSIDE	AMIKACIN/KANAMYCIN	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+catA1	catA	catA1	PHENICOL	CHLORAMPHENICOL	Listeria monocytogenes;Salmonella enterica	1	0	1	0.2	5
+cmlA1	cmlA	cmlA1	PHENICOL	CHLORAMPHENICOL	Listeria monocytogenes_B;Salmonella enterica	1	0	1	0.06666666666666667	15
+dfrA1	dfrA	dfrA1	TRIMETHOPRIM	TRIMETHOPRIM	Listeria monocytogenes_B;Salmonella enterica	1	0	1	0.06666666666666667	15
+emrC_Lis	RND-OM	emrC	QUATERNARY AMMONIUM	QUATERNARY AMMONIUM	Listeria innocua	1	0	1	6.464124111182935e-4	1547
+dfrK	dfr_DGK	dfrK	TRIMETHOPRIM	TRIMETHOPRIM	Listeria aquatica	1	0	1	0.25	4
+erm(Y)	erm-23S_rRNA	erm(Y)	LINCOSAMIDE/MACROLIDE/STREPTOGRAMIN	AZITHROMYCIN/CLINDAMYCIN/ERYTHROMYCIN/STREPTOGRAMIN B	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Enterobacter hormaechei_A;Listeria monocytogenes_B	1	0	1	1	1
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria innocua;Listeria monocytogenes_B	1	0	1	1	1
+fosX	fosX_gen	fosX	FOSFOMYCIN	FOSFOMYCIN	Listeria monocytogenes;Salmonella houtenae	1	0	1	1	1
+lsa(E)	lsa	lsa(E)	LINCOSAMIDE/STREPTOGRAMIN	LINCOSAMIDE/STREPTOGRAMIN	Listeria kieliensis_A	1	0	1	0.3333333333333333	3
+msr(D)	msr	msr(D)	MACROLIDE/STREPTOGRAMIN	AZITHROMYCIN/ERYTHROMYCIN/STREPTOGRAMIN B	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+spd	ant(9)	spd	AMINOGLYCOSIDE	AMINOGLYCOSIDE	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+tet(O)	tet(M-W-O-S)	tet(O)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+vat(B)	vat	vat(B)	STREPTOGRAMIN	STREPTOGRAMIN	Listeria innocua	1	0	1	6.464124111182935e-4	1547
+vga(B)	vga	vga(B)	LINCOSAMIDE	LINCOSAMIDE	Listeria innocua	1	0	1	6.464124111182935e-4	1547
+vga(G)	vga	vga	LINCOSAMIDE	LINCOSAMIDE	Listeria innocua	1	0	1	6.464124111182935e-4	1547
+vga(G)	vga	vga(G)	LINCOSAMIDE	LINCOSAMIDE	Enterobacter hormaechei_A;Listeria monocytogenes_B	1	0	1	1	1
+vga(G)	vga	vga(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria innocua;Listeria monocytogenes_B	1	0	1	1	1
+vga(G)	vga	vga(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes;Salmonella houtenae	1	0	1	1	1
+lnu(B)	lnu_BFG	lnu(B)	LINCOSAMIDE	LINCOSAMIDE	Listeria kieliensis_A	1	0	1	0.3333333333333333	3
+oqxA	RND-peri	oqxA	PHENICOL/QUINOLONE	PHENICOL/QUINOLONE	Enterobacter hormaechei_A;Listeria monocytogenes_B	1	0	1	1	1
+mef(A)	mef_gen	mef(A)	MACROLIDE	AZITHROMYCIN/ERYTHROMYCIN	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+sul3	sul	sul3	SULFONAMIDE	SULFONAMIDE	Listeria monocytogenes_B;Salmonella enterica	1	0	1	0.06666666666666667	15
+tet(K)	tet_L_K_45	tet(K)	TETRACYCLINE	TETRACYCLINE	Listeria innocua	1	0	1	6.464124111182935e-4	1547
+tet(K)	tet_L_K_45	tet(K)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes_B	1	0	1	3.340236488743403e-5	29938
+fos_A_A2	fosA_gen	fosA	FOSFOMYCIN	FOSFOMYCIN	Enterobacter hormaechei_A;Listeria monocytogenes_B	1	0	1	1	1
+tet(L)	tet_L_K_45	tet(L)	TETRACYCLINE	TETRACYCLINE	Listeria fleischmannii	1	0	1	0.0625	16
+tet(L)	tet_L_K_45	tet(L)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes_B	1	0	1	3.340236488743403e-5	29938
+erm(A)	erm-23S_rRNA	erm(A)	LINCOSAMIDE/MACROLIDE	AZITHROMYCIN/CLARITHROMYCIN/CLINDAMYCIN/ERYTHROMYCIN/TELITHROMYCIN	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+tet(G)	tet_A_B_C_D	tet(G)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes_B;Salmonella enterica	1	0	1	0.06666666666666667	15
+ble-Sh	ble	ble-Sh	BLEOMYCIN	BLEOMYCIN	Listeria monocytogenes_B	1	0	1	3.340236488743403e-5	29938
+blaCTX-M	bla-A	blaCTX-M	BETA-LACTAM	CEPHALOSPORIN	Listeria monocytogenes_B	1	0	1	3.340236488743403e-5	29938
+oqxB	RND-IM	oqxB	PHENICOL/QUINOLONE	PHENICOL/QUINOLONE	Enterobacter hormaechei_A;Listeria monocytogenes_B	1	0	1	1	1
+mef(B)	mef_gen	mef(B)	MACROLIDE	AZITHROMYCIN/ERYTHROMYCIN	Listeria monocytogenes_B;Salmonella enterica	1	0	1	0.06666666666666667	15
+ant(4')-Ia	ant(4')-I	aadD1	AMINOGLYCOSIDE	KANAMYCIN/TOBRAMYCIN	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+blaNDM	bla-B1	blaNDM	BETA-LACTAM	CARBAPENEM	Listeria monocytogenes_B	1	0	1	3.340236488743403e-5	29938
+tet(M)	tet(M-W-O-S)	tet(M)	TETRACYCLINE	TETRACYCLINE	Enterobacter hormaechei_A;Listeria monocytogenes_B	1	0	1	1	1
+tet(M)	tet(M-W-O-S)	tet(M)	TETRACYCLINE	TETRACYCLINE	Listeria welshimeri	1	0	1	0.0032679738562091504	306
+tet(B)	tet_A_B_C_D	tet(B)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes;Salmonella enterica	1	0	1	0.2	5
+tet(A)	tet_A_B_C_D	tet(A)	TETRACYCLINE	TETRACYCLINE	Listeria monocytogenes;Salmonella enterica	1	0	1	0.2	5
+lnu(G)	lnu_BFG	lnu(G)	LINCOSAMIDE	LINCOSAMIDE	Listeria monocytogenes_B	1	0	1	3.340236488743403e-5	29938
+blaACT-15	blaACT	blaACT-15	BETA-LACTAM	CEPHALOSPORIN	Enterobacter hormaechei_A;Listeria monocytogenes_B	1	0	1	1	1
+blaCARB-2	blaPSE	blaCARB-2	BETA-LACTAM	BETA-LACTAM	Listeria monocytogenes;Salmonella enterica	1	0	1	0.2	5
+blaTEM-1	blaTEM	blaTEM-1	BETA-LACTAM	BETA-LACTAM	Listeria monocytogenes	1	0	1	3.438434824467902e-5	29083
+blaTEM-1	blaTEM	blaTEM-1	BETA-LACTAM	BETA-LACTAM	Listeria monocytogenes;Salmonella enterica	1	0	1	0.2	5
+blaTEM-116	blaTEM	blaTEM-116	BETA-LACTAM	BETA-LACTAM	Listeria monocytogenes_C	1	0	1	0.006024096385542169	166
+qnrA1	qnrA	qnrA1	QUINOLONE	QUINOLONE	Listeria monocytogenes_B;Salmonella enterica	1	0	1	0.06666666666666667	15
+qnrB19	qnrB	qnrB19	QUINOLONE	QUINOLONE	Listeria monocytogenes_B	1	0	1	3.340236488743403e-5	29938
+RND-IM	NA	NA	NA	NA	Enterobacter hormaechei_A;Listeria monocytogenes_B	0	1	1	1	1
+RND-OM	NA	NA	NA	NA	Listeria innocua	0	1	1	6.464124111182935e-4	1547
+RND-peri	NA	NA	NA	NA	Enterobacter hormaechei_A;Listeria monocytogenes_B	0	1	1	1	1
+aac(3)-I	NA	NA	NA	NA	Listeria monocytogenes	0	1	1	3.438434824467902e-5	29083
+ant(4')-I	NA	NA	NA	NA	Listeria monocytogenes	0	1	1	3.438434824467902e-5	29083
+aph(3')-I	NA	NA	NA	NA	Listeria monocytogenes	0	1	1	3.438434824467902e-5	29083
+aph(3')-I	NA	NA	NA	NA	Listeria monocytogenes_B	0	1	1	3.340236488743403e-5	29938
+aph(3')-II	NA	NA	NA	NA	Listeria monocytogenes	0	1	1	3.438434824467902e-5	29083
+aph(3')-II	NA	NA	NA	NA	Listeria monocytogenes_B	0	1	1	3.340236488743403e-5	29938
+aph(3')-VI	NA	NA	NA	NA	Listeria monocytogenes	0	1	1	3.438434824467902e-5	29083
+bla-A	NA	NA	NA	NA	Listeria monocytogenes	0	1	1	3.438434824467902e-5	29083
+bla-B1	NA	NA	NA	NA	Listeria monocytogenes_B	0	1	1	3.340236488743403e-5	29938
+blaACT	NA	NA	NA	NA	Enterobacter hormaechei_A;Listeria monocytogenes_B	0	1	1	1	1
+blaPSE	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	1	1	0.2	5
+blaTEM	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	1	1	0.2	5
+blaTEM	NA	NA	NA	NA	Listeria monocytogenes_C	0	1	1	0.006024096385542169	166
+ble	NA	NA	NA	NA	Listeria monocytogenes_B	0	1	1	3.340236488743403e-5	29938
+catA	NA	NA	NA	NA	Listeria monocytogenes;Salmonella enterica	0	1	1	0.2	5
+cmlA	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	1	1	0.06666666666666667	15
+dfrA	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	1	1	0.06666666666666667	15
+dfr_DGK	NA	NA	NA	NA	Listeria aquatica	0	1	1	0.25	4
+fosA_gen	NA	NA	NA	NA	Enterobacter hormaechei_A;Listeria monocytogenes_B	0	1	1	1	1
+fosX_gen	NA	NA	NA	NA	Enterobacter hormaechei_A;Listeria monocytogenes_B	0	1	1	1	1
+fosX_gen	NA	NA	NA	NA	Listeria innocua;Listeria monocytogenes_B	0	1	1	1	1
+fosX_gen	NA	NA	NA	NA	Listeria monocytogenes;Salmonella houtenae	0	1	1	1	1
+lnu_BFG	NA	NA	NA	NA	Listeria kieliensis_A	0	1	1	0.3333333333333333	3
+lnu_BFG	NA	NA	NA	NA	Listeria monocytogenes_B	0	1	1	3.340236488743403e-5	29938
+lsa	NA	NA	NA	NA	Listeria kieliensis_A	0	1	1	0.3333333333333333	3
+mef_gen	NA	NA	NA	NA	Listeria monocytogenes	0	1	1	3.438434824467902e-5	29083
+mef_gen	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	1	1	0.06666666666666667	15
+msr	NA	NA	NA	NA	Listeria monocytogenes	0	1	1	3.438434824467902e-5	29083
+qnrA	NA	NA	NA	NA	Listeria monocytogenes_B;Salmonella enterica	0	1	1	0.06666666666666667	15
+tet(M-W-O-S)	NA	NA	NA	NA	Enterobacter hormaechei_A;Listeria monocytogenes_B	0	1	1	1	1
+tet(M-W-O-S)	NA	NA	NA	NA	Listeria welshimeri	0	1	1	0.0032679738562091504	306
+tet_L_K_45	NA	NA	NA	NA	Listeria fleischmannii	0	1	1	0.0625	16
+vat	NA	NA	NA	NA	Listeria innocua	0	1	1	6.464124111182935e-4	1547
+vga	NA	NA	NA	NA	Enterobacter hormaechei_A;Listeria monocytogenes_B	0	1	1	1	1
+vga	NA	NA	NA	NA	Listeria innocua;Listeria monocytogenes_B	0	1	1	1	1
+vga	NA	NA	NA	NA	Listeria monocytogenes;Salmonella houtenae	0	1	1	1	1
