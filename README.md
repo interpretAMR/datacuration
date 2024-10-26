@@ -6,7 +6,7 @@ This repo will be a space for sharing R code to process & analyse matched AMR ge
 
 R code with examples using public NCBI AST data, and AllTheBacteria AMRfinderplus results, to explore core genes and the association of AMR genotypes with phenotypes.
 
-* `coreGenes.Rmd` - identify AMR gene nodes that have high within-species frequency (alone or combined with its child nodes), so need core gene interpretation rules
+* `CoreGenes/coreGenes.Rmd` - identify AMR gene nodes that have high within-species frequency (alone or combined with its child nodes), so need core gene interpretation rules (outputs in `CoreGenes/`)
 * `Enterobacter/Enterobacter.Rmd` (output in `Enterobacter/Enterobacter.html`)
 * `Pseudomonas/Pseudomonas_aeruginosa.Rmd` (output in `Pseudomonas/Pseudomonas_aeruginosa.html`)
 
