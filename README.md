@@ -83,7 +83,7 @@ This repo contains files with the AMRfinderplus output extracted for all the ESG
 
 Note that there are no AMRFP results for Ureaplasma
   
-The script `ATB_ESGEM_orgs.Rmd` shows how we used R to pull out AMRfinderplus results for genomes belonging to a particular species
+The script `ATB_ESGEM_orgs.Rmd` shows how we used R to pull out AMRfinderplus results for genomes belonging to a particular species.
 You can use it to extract data for other species, like this:
 
 ```
