@@ -6,14 +6,14 @@ This repo will be a space for sharing R code to process & analyse matched AMR ge
 
 R code with examples using public NCBI AST data, and AllTheBacteria AMRfinderplus results, to explore core genes and the association of AMR genotypes with phenotypes.
 
-* `coreGenes.Rmd` - identify AMR gene nodes that have high within-species frequency (alone or combined with its child nodes), so need core gene interpretation rules
+* `CoreGenes/coreGenes.Rmd` - identify AMR gene nodes that have high within-species frequency (alone or combined with its child nodes), so need core gene interpretation rules (outputs in `CoreGenes/`)
 * `Enterobacter/Enterobacter.Rmd` (output in `Enterobacter/Enterobacter.html`)
 * `Pseudomonas/Pseudomonas_aeruginosa.Rmd` (output in `Pseudomonas/Pseudomonas_aeruginosa.html`)
 
 Helper functions to parse and analysis AST/AMRfp data:
 * `AllTheBacteria_functions.R` (function to extract AMRfinderplus results for a given species)
 * `NARMS_functions.R` (function to parse AST data from the US National Antimicrobial Resistance Monitoring System, [NARMS](https://www.fda.gov/animal-veterinary/national-antimicrobial-resistance-monitoring-system/narms-now-integrated-data)
-* `functions.R` (functions for comparing AST vs AMRfp genotype data, including assessing solo positive-predictive value per marker, and fitting and plotting logistic regression for a given drug and associated markers)
+* `functions.R` (functions for assessing node frequency per species, comparing AST vs AMRfp genotype data, assessing solo positive-predictive value per marker, and fitting and plotting logistic regression for a given drug and associated markers)
 
 ## Data files
 
@@ -83,7 +83,7 @@ This repo contains files with the AMRfinderplus output extracted for all the ESG
 
 Note that there are no AMRFP results for Ureaplasma
   
-The script `ATB_ESGEM_orgs.Rmd` shows how we used R to pull out AMRfinderplus results for genomes belonging to a particular species
+The script `ATB_ESGEM_orgs.Rmd` shows how we used R to pull out AMRfinderplus results for genomes belonging to a particular species.
 You can use it to extract data for other species, like this:
 
 ```
