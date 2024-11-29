@@ -12,7 +12,7 @@ knitr::opts_knit$set(root.dir = getwd())
 # Data wrangling
 library(tidyverse)
 library(dplyr)
-source("functions.R")
+source("../functions.R")
 ```
 
 # calculate node frequencies (including combined count for each node as a leaf+parent)
@@ -22,7 +22,7 @@ species_list <- read_tsv("../AllTheBacteria/file_info.tsv", col_names=F) %>%
   mutate(sp=gsub(" [0-9]+", "", X1)) %>% pull(sp)
 
 for (species in species_list) {
-  getCoreGenes(amrfp_results=paste0("../AllTheBacteria/ATB_",species,"_AFP.tsv.gz"), species=species)
+  getCoreGenes(amrfp_results=paste0("../AllTheBacteria/ATB_",species,"_AFP.tsv.gz"), species=species, species_calls="../AllTheBacteria/ATB_species_calls.tsv.gz", amrfp_status="../AllTheBacteria/ATB_AMRFP_status.tsv.gz", hierarchy="../ReferenceGeneHierarchy.txt", outdir="../AllTheBacteria/")
 }
 
 ```
@@ -42,7 +42,7 @@ for (species in species_list) {
 
 ``` {r}
 
-common_genes %>% filter(freq>0.8) %>% relocate(Species, .before = node_id) %>% relocate(freq, .before = node_id) %>% view() %>% write_tsv("core_gene_nodes.csv")
+common_genes %>% filter(freq>0.8) %>% relocate(Species, .before = node_id) %>% relocate(freq, .before = node_id) %>% view() %>% write_tsv("core_gene_nodes.tsv")
 
 # number of common genes (freq >=80%) per spp (with >=10 genomes)
 common_genes %>% filter(freq>0.8) %>% group_by(Species, denominator) %>% count() %>% filter(denominator>=10) 
