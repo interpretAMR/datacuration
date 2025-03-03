@@ -1,0 +1,132 @@
+---
+title: "PublicGenoPheno AllTheBacteria Salmonella"
+author: "Zoe Dyson"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    number_sections: TRUE
+    fig_width: 8.27
+    fig_height: 11.69
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = 'png', echo = TRUE, message = FALSE, warning = FALSE,
+                      cache = FALSE, fig.align = 'center')
+knitr::opts_knit$set(root.dir = getwd())
+
+# Data wrangling
+library(knitr)
+library(tidyverse)
+library(dplyr)
+library(patchwork)
+library(AMR)
+library(ComplexUpset)
+library(scales)
+source("../functions.R")
+```
+
+
+# read ATB AMRfinderplus calls - filter to high quality
+```{r }
+
+species_calls <- read_tsv("../AllTheBacteria/ATB_species_calls.tsv.gz")
+salmonella <- species_calls %>% filter(Species=="Salmonella" & HQ) # high quality species calls only
+
+# AMRfinderplus data for samples with high quality species call as PA
+afp <-read_tsv("../AllTheBacteria/ATB_Salmonella_AFP.tsv.gz") %>% 
+  left_join(species_calls, by=join_by("Name"=="Sample")) %>% filter(HQ) 
+
+denom <- afp %>% select(Name) %>% unique() %>% nrow()
+denom
+
+# read in AMRfinderplus status, in case we had samples that were high quality species matches but returned no AMRFP hits
+afp_status <- read_tsv("../AllTheBacteria/ATB_AMRFP_status.tsv.gz") %>% 
+  filter(sample %in% salmonella$Sample)
+
+# check that all passed
+afp_status %>% filter(status!="PASS") %>% nrow()
+
+# no genomes without hits, ignore
+sum(!(afp_status$sample %in% afp$Name))
+
+```
+
+# check for core genes
+``` {r}
+
+# gene frequency per species
+gene_counts <- afp %>% group_by(Name, `Gene symbol`, Class, Subclass, `Element type`) %>% count() %>% distinct() %>% ungroup() %>% group_by(`Gene symbol`, Class, Subclass, `Element type`) %>% count() %>% arrange(-n) %>% mutate(freq=n/denom)
+
+write_tsv(gene_counts, file="../Salmonella/Salmonella_gene_freq.tsv")
+
+dim(gene_counts)
+
+# AMR markers with per-species frequency >90% (candidate core genes)
+gene_counts %>% filter(freq>0.9 & `Element type`=="AMR") %>% kable()
+
+# plot AMR markers with per-species frequency >90% (candidate core genes)
+gene_counts %>% filter(freq>0.9 & `Element type`=="AMR") %>%
+  ggplot(aes(y=`Gene symbol`, x=freq)) + geom_col(position='dodge')
+
+ggsave(width=5, height=5, file="../Salmonella/Salmonella_candidate_coreGenes.pdf")
+```
+
+# check for core genes - nodes
+``` {r}
+
+# node frequency per species
+node_counts <- afp %>% group_by(Name, `Gene symbol`, Class, Subclass, `Element type`, `Hierarchy node`) %>% count() %>% distinct() %>% ungroup() %>% group_by(`Gene symbol`, Class, Subclass, `Element type`, `Hierarchy node`) %>% count() %>% arrange(-n) %>% mutate(freq=n/denom)
+
+write_tsv(node_counts, file="../Salmonella/Salmonella_node_freq.tsv")
+
+# AMR markers with per-species frequency >90% (candidate core genes)
+node_counts %>% filter(freq>0.9 & `Element type`=="AMR")
+
+# plot AMR markers with per-species frequency >90% (candidate core genes)
+node_counts %>% filter(freq>0.9 & `Element type`=="AMR") %>%
+  ggplot(aes(y=`Hierarchy node`, x=freq)) + geom_col(position='dodge')
+
+ggsave(width=5, height=5, file="../Salmonella/Salmonella_candidate_coreGenes_node.pdf")
+
+# check if any other nodes associated with 'Gene symbol' of core genes
+node_counts %>% filter(`Gene symbol` %in% (node_counts %>% filter(freq>0.5 & `Element type`=="AMR") %>% pull(`Gene symbol`)))
+
+# check accessions associated with 'Gene symbol' of core genes
+afp_core <- afp %>% filter(`Gene symbol` %in% (node_counts %>% filter(freq>0.5 & `Element type`=="AMR") %>% pull(`Gene symbol`))) 
+
+```
+
+# boxplot of identity of core gene hits, stratified by accession
+``` {r}
+core_id_plot <- afp_core %>% 
+  mutate(label=paste(`Gene symbol`, `Accession of closest sequence`)) %>% 
+  ggplot(aes(x=label, y=`% Identity to reference sequence`)) + geom_boxplot() + coord_flip()
+
+core_id_plot
+
+# Stats
+afp_core %>% 
+  mutate(label=paste(`Gene symbol`, `Accession of closest sequence`)) %>%
+  filter(`Gene symbol`=="mdsA") %>%
+  pull(`% Identity to reference sequence`) %>%
+  summary()
+
+afp_core %>% 
+  mutate(label=paste(`Gene symbol`, `Accession of closest sequence`)) %>%
+  filter(`Gene symbol`=="mdsB") %>%
+  pull(`% Identity to reference sequence`) %>%
+  summary()
+
+ggsave(width=5, height=5, file="../Salmonella/Salmonella_coreGene_identity.pdf")
+
+afp_core %>% filter(`Gene symbol`=="mdsA") %>% pull(`% Identity to reference sequence`) %>% median()
+
+afp_core %>% filter(`Gene symbol`=="mdsA") %>% group_by(`Accession of closest sequence`, `Hierarchy node`) %>% count()
+
+afp_core %>% filter(`Gene symbol`=="mdsB") %>% pull(`% Identity to reference sequence`) %>% median()
+
+afp_core %>% filter(`Gene symbol`=="mdsB") %>% group_by(`Accession of closest sequence`, `Hierarchy node`) %>% count()
+
+```
+

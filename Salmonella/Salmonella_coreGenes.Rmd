@@ -1,0 +1,66 @@
+---
+title: "Core genes Salmonella"
+output: html_document
+date: "2024-10-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = 'png', echo = TRUE, message = FALSE, warning = FALSE,
+                      cache = FALSE, fig.align = 'center')
+knitr::opts_knit$set(root.dir = getwd())
+
+# Data wrangling
+library(tidyverse)
+library(dplyr)
+source("../functions.R")
+```
+
+# calculate node frequencies (including combined count for each node as a leaf+parent)
+```{r }
+
+species_list <- read_tsv("../Salmonella/ATB_Salmonella_AFP_info.tsv", col_names=F) %>% 
+  mutate(sp=gsub(" [0-9]+", "", X1)) %>% pull(sp)
+
+for (species in species_list) {
+  getCoreGenes(amrfp_results=paste0("../AllTheBacteria/ATB_",species,"_AFP.tsv.gz"), species=species, species_calls="../AllTheBacteria/ATB_species_calls.tsv.gz", amrfp_status="../AllTheBacteria/ATB_AMRFP_status.tsv.gz", hierarchy="../ReferenceGeneHierarchy.txt", outdir="../AllTheBacteria/")
+}
+
+```
+
+# read in genes per species and extract all those with frequency > 80%
+``` {r}
+species_list <- read_tsv("../AllTheBacteria/file_info.tsv", col_names=F) %>% 
+  mutate(sp=gsub(" [0-9]+", "", X1)) %>% pull(sp)
+
+common_genes <- tibble()
+
+for (species in species_list) {
+  infile <- paste0("../AllTheBacteria/",species,"_node_frequencies.tsv")
+  common_genes <- common_genes %>% bind_rows(read_tsv(infile,col_types="ccccccddddd"))
+}
+```
+
+``` {r}
+
+common_genes %>% filter(freq>0.8) %>% relocate(Species, .before = node_id) %>% relocate(freq, .before = node_id) %>% view() %>% write_tsv("core_gene_nodes.tsv")
+
+# number of common genes (freq >=80%) per spp (with >=10 genomes)
+common_genes %>% filter(freq>0.8) %>% group_by(Species, denominator) %>% count() %>% filter(denominator>=10) 
+
+# histogram of number of common genes
+common_genes %>% group_by(Species, denominator) %>% summarise(n=sum(freq>=0.95)) %>%
+  filter(denominator>=20) %>% 
+  ggplot(aes(x=n)) + geom_histogram(binwidth=0.5) + theme_bw() + 
+  labs(x="AMR core genes (≥95% frequency)", y="Number of species (N≥20 genomes)")
+
+ggsave("common_genes_n20_p95.pdf", width=6,height=4)
+
+common_genes %>% group_by(Species, denominator) %>% summarise(n=sum(freq>=0.99)) %>%
+  filter(denominator>=100) %>% 
+  ggplot(aes(x=n)) + geom_histogram(binwidth=0.5) + theme_bw() + 
+  labs(x="AMR core genes (≥99% frequency)", y="Number of species (N≥100 genomes)")
+
+ggsave("common_genes_n100_p99.pdf", width=6,height=4)
+
+```
+
