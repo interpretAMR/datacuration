@@ -2,6 +2,7 @@
 require(refseqR)
 require(msa)
 require(seqinr)
+require(phangorn)
 makeTree <- function(seq_list) {
   seqs <- refseq_AAseq(seq_list)
   aln <- msa(seqs)
