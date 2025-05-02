@@ -17,8 +17,8 @@ source("AllTheBacteria_functions.R")
 
 # set path to file of AMRFinderPlus from AllTheBacteria, downlaoded from https://osf.io/zgexh (0.5GB)
 ``` {r}
-ATB_amrfp <- "AMRFP_results.tsv.gz"
-
+#ATB_amrfp <- "AMRFP_results.tsv.gz"
+ATB_amrfp <- "/Users/ipmbkhot/Library/CloudStorage/GoogleDrive-drkatholt@gmail.com/My\ Drive/AMRnet/resistance\ rules/AMRFP_results.tsv.gz"
 ```
 
 
@@ -34,6 +34,10 @@ getAMRfp <- function(species) {
   as.data.frame(paste(species, dim(amrfp)[1], length(unique(amrfp$Name)))) %>%
     write_tsv(file=paste0("AllTheBacteria/ATB_",species,"_AFP_info.tsv"), col_names = F)
 }
+```
+
+``` {r}
+getAMRfp("Escherichia")
 ```
 
 ``` {r}
@@ -127,6 +131,12 @@ getAMRfp("Klebsiella variicola")
 
 ``` {r}
 getAMRfp("Escherichia coli")
+
+ecoli <- read_tsv("AllTheBacteria/ATB_Escherichia\ coli_AFP.tsv.gz")
+ecoli <- ecoli %>%
+  filter(`Element type`=="AMR")
+
+write_csv(ecoli,"AllTheBacteria/ATB_Escherichia\ coli_AFP_AMR.csv.gz")
 ```
 
 ``` {r}

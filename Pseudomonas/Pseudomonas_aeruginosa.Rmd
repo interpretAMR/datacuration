@@ -27,8 +27,8 @@ species_calls <- read_tsv("../AllTheBacteria/ATB_species_calls.tsv.gz")
 pseudomonas <- species_calls %>% filter(Species=="Pseudomonas aeruginosa" & HQ) # high quality species calls only
 
 # AMRfinderplus data for samples with high quality species call as PA
-afp <-read_tsv("../AllTheBacteria/ATB_Pseudomonas_aeruginosa_AFP.tsv.gz") %>% 
-  left_join(species_calls, by=join_by("Name"=="Sample")) %>% filter(HQ) 
+afp <-read_tsv("../AllTheBacteria/ATB_Pseudomonas aeruginosa_AFP.tsv.gz") %>% 
+  left_join(species_calls, by=join_by("Name"=="Sample")) 
 
 denom <- afp %>% select(Name) %>% unique %>% nrow()
 denom
