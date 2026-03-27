@@ -1,0 +1,9 @@
+On November 25th, 2024 there were ASTs available for 4010 genomes of Campylobacter, but in AllTheBacteria AFP data was available only for 3522 of them.
+
+From the remaining 488, 484 genomes could be downloaded as assemblies from NCBI and the other 4 (SAMN13718873,SAMN20119351,SAMN22985687,SAMN37751381) as FASTQ short raw reads. The latter were assembled with SKESA 2.5.1.
+
+All 488 assembled genomes were analyzed with AMRFinderPlus 4.0.3 using the following command:
+
+amrfinder --plus --print_node -O Campylobacter -o file_output.txt -n file_input_genomic.fna.gz
+
+Non-empty results were obtained for 358 genomes, that are present in ATB_Campylobacter_AFP_complement1.tsv.gz.
